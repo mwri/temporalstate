@@ -103,11 +103,11 @@ will work.
    1. [Contents](#contents).
    2. [Full API reference](#full-api-reference).
       1. [constructor](#constructor).
-      2. [add_change](#add-change).
-      3. [change_list](#change-list).
+      2. [add_change](#add_change).
+      3. [change_list](#change_list).
       4. [state](#state).
-      5. [state_detail](#state-detail).
-      6. [change_cmp](#change-cmp).
+      5. [state_detail](#state_detail).
+      6. [change_cmp](#change_cmp).
 2. [Build](#build).
 
 ## Full API reference
@@ -220,7 +220,7 @@ the time passed as argument one) and what the next value is.
 The return value when a second argument (state name) is passed
 is of the form `{'from': current_change, 'to': next_change}`, where
 `current_change` and `next_change` are formatted like the
-changes returned by [change_list](#change-list), something like
+changes returned by [change_list](#change_list), something like
 `{ timestamp: 3, name: 'moon', val: 'crescent' }`.
 
 ```javascript
@@ -276,7 +276,7 @@ The ordering of the list is done by the state name
 
 This is a static function, not a class method, it takes two
 arguments and provides the sort order for changes (as returned
-by [change_list](#change-list)) by returning 1, 0 or -1, like
+by [change_list](#change_list)) by returning 1, 0 or -1, like
 all sort element comparison functions.
 
 The order of changes is determined first by the time of the
