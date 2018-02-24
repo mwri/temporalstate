@@ -9,7 +9,7 @@
   "os": [
     "linux"
   ],
-  "main": "lib/index.js",
+  "main": "lib/temporalstate.js",
   "license": "MIT",
   "url": "https://github.com/mwri/temporalstate",
   "scripts": {
