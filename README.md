@@ -105,9 +105,12 @@ will work.
       1. [constructor](#constructor).
       2. [add_change](#add_change).
       3. [change_list](#change_list).
-      4. [state](#state).
-      5. [state_detail](#state_detail).
-      6. [change_cmp](#change_cmp).
+      4. [first](#first).
+      5. [last](#last).
+      6. [next](#next).
+      7. [prev](#prev).
+      8. [state_detail](#state_detail).
+      9. [change_cmp](#change_cmp).
 2. [Build](#build).
 
 ## Full API reference
@@ -169,6 +172,117 @@ Here, `changes` will be a list of objects, each with `timestamp`,
   { timestamp: 27, name: 'sun',     val: 'setting'  },
   { timestamp: 35, name: 'moon',    val: 'super'    },
   { timestamp: 40, name: 'weather', val: 'foggy'    },
+]
+```
+
+### first
+
+Returns the first change(s) (i.e. the first ranked by time).
+The return value is a list, and will contain all the changes
+which have a time equal to the lowest time in the database.
+So this will probably usually be a list of one change, but
+could be any number. The return value can also be `null` if
+there are no changes in the database.
+
+```javascript
+let first_changes = db.first();
+```
+
+Here, `first_changes` will be a list of objects just like those
+returned by [change_list](#change_list) above:
+
+```javascript
+[ { timestamp: 3, name: 'moon', val: 'crescent' } ]
+```
+
+Or it could be:
+
+```javascript
+[
+  { timestamp: 3, name: 'moon',        val:  'crescent' },
+  { timestamp: 3, name: 'temperature', val:  22         },
+]
+```
+
+The time will always be the same if there are multiple
+changes.
+
+### last
+
+This is like [first](#first) but it returns the last change(s).
+Again there can be multiple changes if their time is the same
+and again the return value can instead be `null` if there are
+no changes in the database.
+
+```javascript
+let last_changes = db.last();
+```
+
+Here, `last_changes` will be a list of objects just like those
+returned by [change_list](#change_list) and [first](#first)
+above:
+
+```javascript
+[ { timestamp: 40, name: 'weather', val: 'foggy' } ]
+```
+
+Or it could be:
+
+```javascript
+[
+  { timestamp: 40, name: 'temperature', val: 18      },
+  { timestamp: 40, name: 'weather',     val: 'foggy' },
+]
+```
+
+### next
+
+This returns the next change (after the one passed as an
+argument). Much like [first](#first) and [last](#last),
+multiple changes may be returned if they are of the same
+time.
+
+```javascript
+let next_changes = db.next({timestamp: 20, name: 'weather', val: 'sunny'});
+```
+
+Here, `next_changes` will be a list of objects, like:
+
+```javascript
+[ { timestamp: 25, name: 'moon', val: 'full' } ]
+```
+
+Or it could be:
+
+```javascript
+[
+  { timestamp: 25, name: 'moon',        val: 'full' },
+  { timestamp: 25, name: 'temperature', val: 25     },
+]
+```
+
+### prev
+
+This returns the previous change (after the one passed as an
+argument). Much like [prev](#prev) multiple changes may be
+returned if they are of the same time.
+
+```javascript
+let prev_changes = db.prev({timestamp: 20, name: 'weather', val: 'sunny'});
+```
+
+Here, `next_changes` will be a list of objects, like:
+
+```javascript
+[ { timestamp: 12, name: 'sun', val: 'rising' },
+```
+
+Or it could be:
+
+```javascript
+[
+  { timestamp: 12, name: 'sun',         val: 'rising' },
+  { timestamp: 12, name: 'temperature', val: 14       },
 ]
 ```
 

@@ -59,6 +59,11 @@ describe('temporalstate', () => {
             let i5 = tree.upperBound(3);
             expect(i5.data()).to.eql(5);
             expect(i5.prev()).to.eql(null);
+            let i6 = tree.iterator();
+            expect(i6.data()).to.eql(null);
+            expect(i6.prev()).to.eql(40);
+            expect(i6.data()).to.eql(40);
+            expect(i6.prev()).to.eql(15);
         });
 
     });
@@ -454,6 +459,155 @@ describe('temporalstate', () => {
                 {'timestamp': 30, 'name': 'moon', 'val': 'ecclipsed'},
                 {'timestamp': 20, 'name': 'weather', 'val': 'sunny'},
             ],
+        });
+
+    });
+
+    describe('stepping', () => {
+
+        beforeEach(function () {
+            let db = new temporalstate();
+            for (let change of [
+                {'timestamp': 10, 'name': 'weather', 'val': 'raining'},
+                {'timestamp': 20, 'name': 'weather', 'val': 'sunny'},
+                {'timestamp': 25, 'name': 'sun', 'val': 'spotty'},
+                {'timestamp': 30, 'name': 'moon', 'val': 'ecclipsed'},
+                {'timestamp': 30, 'name': 'weather', 'val': 'foggy'},
+                {'timestamp': 50, 'name': 'moon', 'val': 'super'},
+            ]) {
+                db.add_change(change.name, change.val, change.timestamp);
+            }
+            this.db = db;
+        });
+
+        describe('first', () => {
+
+            it('returns null when there are no changes', function () {
+                let db = new temporalstate();
+                expect(db.first()).to.eql(null);
+            });
+
+            it('returns the first change (singular result)', function () {
+                let db = this.db;
+                expect(db.first())
+                    .to.eql([{'timestamp': 10, 'name': 'weather', 'val': 'raining'}]);
+            });
+
+            it('returns the first change (multiple result)', function () {
+                let db = this.db;
+                db.add_change('sun', 'exploding', 10);
+                expect(db.first())
+                    .to.eql([
+                        {'timestamp': 10, 'name': 'sun', 'val': 'exploding'},
+                        {'timestamp': 10, 'name': 'weather', 'val': 'raining'},
+                    ]);
+            });
+
+        });
+
+        describe('last', () => {
+
+            it('returns null when there are no changes', function () {
+                let db = new temporalstate();
+                expect(db.last()).to.eql(null);
+            });
+
+            it('returns the last change (singular result)', function () {
+                let db = this.db;
+                expect(db.last())
+                    .to.eql([{'timestamp': 50, 'name': 'moon', 'val': 'super'}]);
+            });
+
+            it('returns the last change (multiple result)', function () {
+                let db = this.db;
+                db.add_change('sun', 'ecclipsed', 50);
+                expect(db.last())
+                    .to.eql([
+                        {'timestamp': 50, 'name': 'moon', 'val': 'super'},
+                        {'timestamp': 50, 'name': 'sun', 'val': 'ecclipsed'},
+                    ]);
+            });
+
+        });
+
+        describe('next', () => {
+
+            it('finds the next change (singular result)', function () {
+                let db = this.db;
+                expect(db.next({'timestamp': 10, 'name': 'weather', 'val': 'raining'}))
+                    .to.be.an('array')
+                    .to.eql([{'timestamp': 20, 'name': 'weather', 'val': 'sunny'}]);
+                expect(db.next({'timestamp': 20, 'name': 'weather', 'val': 'sunny'}))
+                    .to.be.an('array')
+                    .to.eql([{'timestamp': 25, 'name': 'sun', 'val': 'spotty'}]);
+            });
+
+            it('finds the next change (multiple result)', function () {
+                let db = this.db;
+                expect(db.next({'timestamp': 25, 'name': 'sun', 'val': 'spotty'}))
+                    .to.be.an('array')
+                    .to.eql([
+                        {'timestamp': 30, 'name': 'moon', 'val': 'ecclipsed'},
+                        {'timestamp': 30, 'name': 'weather', 'val': 'foggy'},
+                    ]);
+            });
+
+            it('finds the next change at a later time when multiple changes at the current time', function () {
+                let db = this.db;
+                expect(db.next({'timestamp': 30, 'name': 'moon', 'val': 'ecclipsed'}))
+                    .to.be.an('array')
+                    .to.eql([{'timestamp': 50, 'name': 'moon', 'val': 'super'}]);
+                expect(db.next({'timestamp': 30, 'name': 'weather', 'val': 'foggy'}))
+                    .to.be.an('array')
+                    .to.eql([{'timestamp': 50, 'name': 'moon', 'val': 'super'}]);
+            });
+
+            it('returns null when the current change is last', function () {
+                let db = this.db;
+                expect(db.next({'timestamp': 50, 'name': 'moon', 'val': 'super'}))
+                    .to.be.an('null');
+            });
+                
+        });
+
+        describe('prev', () => {
+
+            it('finds the previous change (singular result)', function () {
+                let db = this.db;
+                expect(db.prev({'timestamp': 25, 'name': 'sun', 'val': 'spotty'}))
+                    .to.be.an('array')
+                    .to.eql([{'timestamp': 20, 'name': 'weather', 'val': 'sunny'}]);
+                expect(db.prev({'timestamp': 20, 'name': 'weather', 'val': 'sunny'}))
+                    .to.be.an('array')
+                    .to.eql([{'timestamp': 10, 'name': 'weather', 'val': 'raining'}]);
+            });
+
+            it('finds the previous change (multiple result)', function () {
+                let db = this.db;
+                expect(db.prev({'timestamp': 50, 'name': 'moon', 'val': 'super'}))
+                    .to.be.an('array')
+                    .to.eql([
+                        {'timestamp': 30, 'name': 'moon', 'val': 'ecclipsed'},
+                        {'timestamp': 30, 'name': 'weather', 'val': 'foggy'},
+                    ]);
+            });
+
+            it('finds the previous change at an earlier time when multiple changes at the current time', function () {
+                let db = this.db;
+                expect(db.prev({'timestamp': 30, 'name': 'moon', 'val': 'ecclipsed'}))
+                    .to.be.an('array')
+                    .to.eql([{'timestamp': 25, 'name': 'sun', 'val': 'spotty'}]);
+                expect(db.prev({'timestamp': 30, 'name': 'weather', 'val': 'foggy'}))
+                    .to.be.an('array')
+                    .to.eql([{'timestamp': 25, 'name': 'sun', 'val': 'spotty'}]);
+            });
+
+            it('returns null when the current change is first', function () {
+                let db = this.db;
+                expect(db.prev({'timestamp': 10, 'name': 'weather', 'val': 'raining'}))
+                    .to.be.an('null');
+            });
+                
         });
 
     });
