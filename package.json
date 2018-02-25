@@ -1,7 +1,7 @@
 {
   "name": "temporalstate",
   "description": "Temporal state derivation engine",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "author": {
     "name": "Michael Wright",
     "email": "mjw@methodanalysis.com"
