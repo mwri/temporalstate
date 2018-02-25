@@ -3,7 +3,8 @@
 ## Quick start
 
 Temporal state is a library for building, manipulating and deriving the
-state of a collection of variables over time.
+state of a collection of variables over time. It is efficient, using
+binary trees, and will scale to big data sets.
 
 For example, if you create a temporalstate object and tell it the **weather**
 is `"raining"` at **t = 5** it can then be derived that the **weather** is
@@ -105,12 +106,14 @@ will work.
       1. [constructor](#constructor).
       2. [add_change](#add_change).
       3. [change_list](#change_list).
-      4. [first](#first).
-      5. [last](#last).
-      6. [next](#next).
-      7. [prev](#prev).
-      8. [state_detail](#state_detail).
-      9. [change_cmp](#change_cmp).
+      4. [var_list](#var_list).
+      5. [first](#first).
+      6. [last](#last).
+      7. [next](#next).
+      8. [prev](#prev).
+      9. [state](#state).
+      1. [state_detail](#state_detail).
+      10. [change_cmp](#change_cmp).
 2. [Build](#build).
 
 ## Full API reference
@@ -172,6 +175,25 @@ Here, `changes` will be a list of objects, each with `timestamp`,
   { timestamp: 27, name: 'sun',     val: 'setting'  },
   { timestamp: 35, name: 'moon',    val: 'super'    },
   { timestamp: 40, name: 'weather', val: 'foggy'    },
+]
+```
+
+### var_list
+
+Returns a list of known variables. This will include variables
+without states, if there are any. The result is sorted.
+
+```javascript
+let vars = db.var_list();
+```
+
+Here, `vars` will be a list of variable names, like this:
+
+```javascript
+[
+  'moon',
+  'sun',
+  'weather',
 ]
 ```
 

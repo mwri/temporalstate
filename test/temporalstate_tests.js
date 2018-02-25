@@ -463,6 +463,38 @@ describe('temporalstate', () => {
 
     });
 
+    describe('var_list', () => {
+
+        beforeEach(function () {
+            let db = new temporalstate();
+            this.db = db;
+        });
+
+        it('returns a list of known variable names', function () {
+            let db = this.db;
+            expect(db.var_list())
+                .to.be.an('array')
+                .is.lengthOf(0);
+            db.add_change('foo', 'fooval1', 10);
+            expect(db.var_list())
+                .to.be.an('array')
+                .is.lengthOf(1)
+                .to.include('foo');
+            db.add_change('foo', 'fooval2', 20);
+            expect(db.var_list())
+                .to.be.an('array')
+                .is.lengthOf(1)
+                .to.include('foo');
+            db.add_change('bar', 'barval1', 15);
+            expect(db.var_list())
+                .to.be.an('array')
+                .is.lengthOf(2)
+                .to.include('foo')
+                .to.include('bar');
+        });
+
+    });
+
     describe('stepping', () => {
 
         beforeEach(function () {
