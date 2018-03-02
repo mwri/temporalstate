@@ -9,11 +9,11 @@ binary trees, and will scale to big data sets.
 For example, if you create a temporalstate object and tell it the **weather**
 is `"raining"` at **t = 5** it can then be derived that the **weather** is
 `null` from the start of time until **t = 5**, and from then until the end
-of time it is `"sunny"`. You can derive the value for **weather** at any
+of time it is `"raining"`. You can derive the value for **weather** at any
 time in fact.
 
 If you also add that the **moon** is `"crescent"` at **t = 3** and introduce
-data concerning any number of other variables then the full set of all variable
+data concerning any number of other variables, then the full set of all variable
 values can be derived for any given time.
 
 The value of any variable before the time of its first value will be
