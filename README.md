@@ -103,17 +103,24 @@ will work.
 1. [Quick start](#quick-start).
    1. [Contents](#contents).
    2. [Full API reference](#full-api-reference).
-      1. [constructor](#constructor).
-      2. [add_change](#add_change).
-      3. [change_list](#change_list).
-      4. [var_list](#var_list).
-      5. [first](#first).
-      6. [last](#last).
-      7. [next](#next).
-      8. [prev](#prev).
-      9. [state](#state).
-      1. [state_detail](#state_detail).
-      10. [change_cmp](#change_cmp).
+      1. [Functions](#functions).
+         1. [constructor](#constructor).
+         2. [add_change](#add_change).
+         3. [change_list](#change_list).
+         4. [var_list](#var_list).
+         5. [first](#first).
+         6. [last](#last).
+         7. [next](#next).
+         8. [prev](#prev).
+         9. [state](#state).
+         10. [state_detail](#state_detail).
+         11. [change_cmp](#change_cmp).
+      2. [Events](#events).
+         1. [new_var](#new_var).
+         2. [add](#add).
+         3. [rm](#rm).
+         4. [change](#change).
+         5. [txn](#txn).
 2. [Build](#build).
 
 ## Full API reference
@@ -130,7 +137,9 @@ Or with require:
 let temporalstate = require('temporalstate').default;
 ```
 
-### constructor
+### Functions
+
+#### constructor
 
 Constructs a `temporalstate` object.
 
@@ -138,7 +147,7 @@ Constructs a `temporalstate` object.
 let db = new temporalstate();
 ```
 
-### add_change
+#### add_change
 
 Adds a change to the temporal data. If the change is redundant
 or renders other current changes redundant they will be trimmed
@@ -154,7 +163,7 @@ db.add_change('weather', 'foggy', 40);
 db.add_change('moon', 'crescent', 3);
 ```
 
-### change_list
+#### change_list
 
 Returns the set of all known changes.
 
@@ -178,7 +187,7 @@ Here, `changes` will be a list of objects, each with `timestamp`,
 ]
 ```
 
-### var_list
+#### var_list
 
 Returns a list of known variables. This will include variables
 without states, if there are any. The result is sorted.
@@ -197,7 +206,7 @@ Here, `vars` will be a list of variable names, like this:
 ]
 ```
 
-### first
+#### first
 
 Returns the first change(s) (i.e. the first ranked by time).
 The return value is a list, and will contain all the changes
@@ -229,7 +238,7 @@ Or it could be:
 The time will always be the same if there are multiple
 changes.
 
-### last
+#### last
 
 This is like [first](#first) but it returns the last change(s).
 Again there can be multiple changes if their time is the same
@@ -257,7 +266,7 @@ Or it could be:
 ]
 ```
 
-### next
+#### next
 
 This returns the next change (after the one passed as an
 argument). Much like [first](#first) and [last](#last),
@@ -283,7 +292,7 @@ Or it could be:
 ]
 ```
 
-### prev
+#### prev
 
 This returns the previous change (after the one passed as an
 argument). Much like [prev](#prev) multiple changes may be
@@ -308,7 +317,7 @@ Or it could be:
 ]
 ```
 
-### state
+#### state
 
 Returns the state at any given time. Takes either one or two
 arguments, the first, compulsory parameter, is the time, and
@@ -343,7 +352,7 @@ Here `weather_at_20_time` will contain something like this:
 'sunny'
 ```
 
-### state_detail
+#### state_detail
 
 State detail, like [state](#state) takes one or two arguments, the
 time, and optionally a state name. It also similarly returns state
@@ -408,7 +417,7 @@ like:
 
 The ordering of the list is done by the state name
 
-### change_cmp
+#### change_cmp
 
 This is a static function, not a class method, it takes two
 arguments and provides the sort order for changes (as returned
@@ -417,6 +426,101 @@ all sort element comparison functions.
 
 The order of changes is determined first by the time of the
 change, and then by the name of the state.
+
+### Functions
+
+#### new_var
+
+The **new_var** event is emitted when a new variable is realised.
+Adding an event with a variable name not seen before will cause
+this.
+
+```javascript
+db.on('new_var', (name) => {
+    console.log('added "'+name+'", not seen before');
+});
+```
+
+#### add
+
+The **add** event is emitted when a change is added to the database.
+
+```javascript
+db.on('add', (change) => {
+    console.log('added a change (at '+change.timestamp+' '+change.name+' = '+change.val)');
+});
+```
+
+Note that this event will only fire for an actual change, so if
+a change is added that is redundant, no event will occur.
+
+#### rm
+
+The **rm** event is emitted when a change is eliminated from the
+database.
+
+```javascript
+db.on('add', (change) => {
+    console.log('removed a change (at '+change.timestamp+' '+change.name+' = '+change.val)');
+});
+```
+
+Changes may be removed to preserve the parsimony of the database so
+the change removal need not be explicit.
+
+#### change
+
+The **change** event is emitted when a change is made that alters the
+value of an existing variable at a time when that variable already
+has a change.
+
+```javascript
+db.on('change', (prev, new_val) => {
+    console.log('change '+prev.name+' = '+prev.val at '+prev.timestamp+' changing to '+new_val);
+});
+```
+
+#### txn
+
+The **txn** event is emitted when any change occurs. A change may
+result in multiple operations however (and hence as a result a
+number of **add**, **rm** or **change** events may be emitted)
+so if it is desired to either capture these as one transaction
+or to capture the original change that caused them, the **txn**
+transaction should be used.
+
+```javascript
+db.on('txn', (change, ops) => {
+    console.log('change requested:');
+    console.log(change);
+    console.log('operations required:');
+    console.log(ops);
+});
+```
+
+For example, if the following changes are added (to an empty
+database):
+
+```javascript
+db.add_change('weather', 'raining', 10);
+db.add_change('weather', 'sunny', 20);
+db.add_change('weather', 'raining', 30);
+```
+
+Then this change is added:
+
+```javascript
+db.add_change('weather', 'raining', 20);
+```
+
+The **txn** event will be emitted with the first argument being
+`{add: {'timestamp': 20, 'name': 'weather', 'val': 'raining'}}`
+and the second being `[{'remove': {'timestamp': 20, 'name': 'weather',
+'val': 'sunny'}}, {'remove': {'timestamp': 30, 'name': 'weather',
+'val': 'raining'}}]`.
+
+Most changes will of course usually result in a transaction with
+a single operation which is identical to the actual change requested.
 
 ## Build
 

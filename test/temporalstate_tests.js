@@ -1023,6 +1023,150 @@ describe('temporalstate', () => {
 
         });
 
+        describe('events', () => {
+
+            beforeEach(function () {
+                this.db = new temporalstate();
+            });
+
+            it('emits "new_var" when adding change with new variable', function () {
+                let db = this.db;
+                let new_vars_emitted = {};
+                db.on('new_var', (name) => {
+                    new_vars_emitted[name] = true;
+                });
+                db.add_change('weather', 'raining', 10);
+                expect(new_vars_emitted.weather).to.eql(true);
+                db.add_change('moon', 'blood', 20);
+                expect(new_vars_emitted.moon).to.eql(true);
+                db.add_change('sun', 'hot', 30);
+                expect(new_vars_emitted.sun).to.eql(true);
+            });
+
+            it('does not emit "new_var" when adding change with previously known variable', function () {
+                let db = this.db;
+                db.add_change('weather', 'sunny', 1);
+                db.add_change('moon', 'blue', 2);
+                db.add_change('sun', 'nova', 3);
+                let new_vars_emitted = {};
+                db.on('new_var', (name) => {
+                    new_vars_emitted[name] = true;
+                });
+                db.add_change('weather', 'raining', 10);
+                expect(new_vars_emitted.weather).to.eql(undefined);
+                db.add_change('moon', 'blood', 20);
+                expect(new_vars_emitted.moon).to.eql(undefined);
+                db.add_change('sun', 'hot', 30);
+                expect(new_vars_emitted.sun).to.eql(undefined);
+            });
+
+            it('emits "add" when adding change', function () {
+                let db = this.db;
+                let emitted_add;
+                db.on('add', (change) => {
+                    emitted_add = change;
+                });
+                db.add_change('weather', 'raining', 10);
+                expect(emitted_add).to.eql({'timestamp': 10, 'name': 'weather', 'val': 'raining'});
+            });
+
+            it('does not emit "add" when change is redundant', function () {
+                let db = this.db;
+                db.add_change('weather', 'raining', 10);
+                let emitted_add;
+                db.on('add', (change) => {
+                    emitted_add = change;
+                });
+                db.add_change('weather', 'raining', 10);
+                expect(emitted_add).to.eql(undefined);
+            });
+
+            it('emits "rm" when adding change which renders existing change redundant', function () {
+                let db = this.db;
+                db.add_change('weather', 'raining', 10);
+                db.add_change('weather', 'sunny', 20);
+                let emitted_rm;
+                db.on('rm', (change) => {
+                    emitted_rm = change;
+                });
+                db.add_change('weather', 'sunny', 10);
+                expect(emitted_rm).to.eql({'timestamp': 20, 'name': 'weather', 'val': 'sunny'});
+            });
+
+            it('emits "rm" when adding change which renders existing change redundant', function () {
+                let db = this.db;
+                db.add_change('weather', 'raining', 10);
+                db.add_change('weather', 'sunny', 20);
+                let emitted_rm;
+                db.on('rm', (change) => {
+                    emitted_rm = change;
+                });
+                db.add_change('weather', 'sunny', 10);
+                expect(emitted_rm).to.eql({'timestamp': 20, 'name': 'weather', 'val': 'sunny'});
+            });
+
+            it('does not emit "rm" when adding change which renders no existing change redundant', function () {
+                let db = this.db;
+                db.add_change('weather', 'raining', 10);
+                db.add_change('weather', 'sunny', 20);
+                let emitted_rm;
+                db.on('rm', (change) => {
+                    emitted_rm = change;
+                });
+                db.add_change('weather', 'fair', 10);
+                expect(emitted_rm).to.eql(undefined);
+            });
+
+            it('emits "change" when changing existing var time to a different value', function () {
+                let db = this.db;
+                db.add_change('weather', 'raining', 10);
+                let emitted_change;
+                db.on('change', (orig, new_val) => {
+                    emitted_change = [orig, new_val];
+                });
+                db.add_change('weather', 'sunny', 10);
+                expect(emitted_change).to.eql([{'timestamp': 10, 'name': 'weather', 'val': 'raining'}, 'sunny']);
+            });
+
+            it('emits "change" when changing existing var time to the same value', function () {
+                let db = this.db;
+                db.add_change('weather', 'raining', 10);
+                let emitted_change;
+                db.on('change', (orig, new_val) => {
+                    emitted_change = [orig, new_val];
+                });
+                db.add_change('weather', 'raining', 10);
+                expect(emitted_change).to.eql(undefined);
+            });
+
+            it('emits "txn" with multiple values when mutliple changes happen at once', function () {
+                let db = this.db;
+                expect(db.change_list())
+                    .to.be.an('array')
+                    .is.lengthOf(0);
+                db.add_change('weather', 'raining', 10);
+                db.add_change('weather', 'sunny', 20);
+                db.add_change('weather', 'raining', 30);
+                expect(db.change_list())
+                    .to.be.an('array')
+                    .is.lengthOf(3)
+                    .to.include({'timestamp': 10, 'name': 'weather', 'val': 'raining'})
+                    .to.include({'timestamp': 20, 'name': 'weather', 'val': 'sunny'})
+                    .to.include({'timestamp': 30, 'name': 'weather', 'val': 'raining'});
+                let emitted_txn;
+                db.on('txn', (change, ops) => {
+                    emitted_txn = [change, ops];
+                });
+                db.add_change('weather', 'raining', 20);
+                expect(emitted_txn).to.eql([
+                    {add: {'timestamp': 20, 'name': 'weather', 'val': 'raining'}},
+                    [{'remove': {'timestamp': 20, 'name': 'weather', 'val': 'sunny'}},
+                     {'remove': {'timestamp': 30, 'name': 'weather', 'val': 'raining'}}]
+                ]);
+            });
+
+        });
+
     });
 
 });
