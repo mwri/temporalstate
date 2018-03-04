@@ -112,9 +112,12 @@ will work.
          6. [last](#last).
          7. [next](#next).
          8. [prev](#prev).
-         9. [state](#state).
-         10. [state_detail](#state_detail).
-         11. [change_cmp](#change_cmp).
+         9. [at](#at).
+         10. [after](#after).
+         11. [before](#before).
+         12. [state](#state).
+         13. [state_detail](#state_detail).
+         14. [change_cmp](#change_cmp).
       2. [Events](#events).
          1. [new_var](#new_var).
          2. [add](#add).
@@ -316,6 +319,48 @@ Or it could be:
   { timestamp: 12, name: 'temperature', val: 14       },
 ]
 ```
+
+#### at
+
+Returns the change(s) occurring at exactly the specified time.
+The required time is passed as an argument. Because multiple
+changes (of different variables) could match the return value
+is an array. For example:
+
+```javascript
+let changes_at = db.at(10);
+```
+
+Returns an empty list if there are no changes at the specified
+time.
+
+#### after
+
+Returns the change(s) occurring closest after the specified time.
+The required time is passed as an argument. Because multiple
+changes (of different variables) could match (if they share the
+closest time) the return value is an array. For example:
+
+```javascript
+let changes_after = db.after(20);
+```
+
+If the time specified is after the last known change, then
+`null` is returned.
+
+#### before
+
+Returns the change(s) occurring closest before the specified time.
+The required time is passed as an argument. Because multiple
+changes (of different variables) could match (if they share the
+closest time) the return value is an array. For example:
+
+```javascript
+let changes_before = db.before(20);
+```
+
+If the time specified is before the first known change, then
+`null` is returned.
 
 #### state
 

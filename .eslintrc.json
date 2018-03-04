@@ -106,8 +106,6 @@
             "always"
         ],
         "max-depth": "error",
-        "max-len": "off",
-        "max-lines": "error",
         "max-nested-callbacks": "error",
         "max-params": "error",
         "max-statements": ["error", {"max": 40}],
@@ -213,7 +211,6 @@
             "error",
             "never"
         ],
-        "object-shorthand": "error",
         "one-var": "off",
         "one-var-declaration-per-line": "error",
         "operator-assignment": "error",

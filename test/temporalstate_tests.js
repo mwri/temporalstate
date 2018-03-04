@@ -642,6 +642,104 @@ describe('temporalstate', () => {
                 
         });
 
+        describe('at', () => {
+
+            it('finds the change at the exact time (singular result)', function () {
+                let db = this.db;
+                expect(db.at(10)).to.eql([{'timestamp': 10, 'name': 'weather', 'val': 'raining'}]);
+            });
+
+            it('finds the change at the exact time (multiple result)', function () {
+                let db = this.db;
+                expect(db.at(30)).to.eql([
+                    {'timestamp': 30, 'name': 'moon', 'val': 'ecclipsed'},
+                    {'timestamp': 30, 'name': 'weather', 'val': 'foggy'},
+                ]);
+            });
+
+            it('returns an empty list when there is no change at the specified time', function () {
+                let db = this.db;
+                expect(db.at(1)).to.eql([]);
+                expect(db.at(11)).to.eql([]);
+                expect(db.at(111)).to.eql([]);
+            });
+
+        });
+
+        describe('after', () => {
+
+            it('returns null when there are no changes', function () {
+                let db = new temporalstate();
+                expect(db.after(15)).to.eql(null);
+            });
+
+            it('returns null when there are no changes after the passed timestamp', function () {
+                let db = this.db;
+                expect(db.after(60)).to.eql(null);
+                expect(db.after(70)).to.eql(null);
+            });
+
+            it('returns the first change after the passed time stamp (first change)', function () {
+                let db = this.db;
+                expect(db.after(5))
+                    .to.eql([{'timestamp': 10, 'name': 'weather', 'val': 'raining'}]);
+            });
+
+            it('returns the first change after the passed time stamp (single result)', function () {
+                let db = this.db;
+                expect(db.after(15))
+                    .to.eql([{'timestamp': 20, 'name': 'weather', 'val': 'sunny'}]);
+            });
+
+            it('returns the first change after the passed time stamp (multiple result)', function () {
+                let db = this.db;
+                expect(db.after(27))
+                    .to.eql([
+                        {'timestamp': 30, 'name': 'moon', 'val': 'ecclipsed'},
+                        {'timestamp': 30, 'name': 'weather', 'val': 'foggy'},
+                    ]);
+            });
+
+        });
+
+        describe('before', () => {
+
+            it('returns null when there are no changes', function () {
+                let db = new temporalstate();
+                expect(db.before()).to.eql(null);
+            });
+
+            it('returns null when there are no changes before the passed time stamp', function () {
+                let db = this.db;
+                expect(db.before(0)).to.eql(null);
+                expect(db.before(5)).to.eql(null);
+            });
+
+            it('returns the last change before the passed time stamp (last change)', function () {
+                let db = this.db;
+                expect(db.before(60))
+                    .to.eql([{'timestamp': 50, 'name': 'moon', 'val': 'super'}]);
+                expect(db.before(70))
+                    .to.eql([{'timestamp': 50, 'name': 'moon', 'val': 'super'}]);
+            });
+
+            it('returns the last change before the last timestamp (singular result)', function () {
+                let db = this.db;
+                expect(db.before(23))
+                    .to.eql([{'timestamp': 20, 'name': 'weather', 'val': 'sunny'}]);
+            });
+
+            it('returns the last change before the last timestamp (multiple result)', function () {
+                let db = this.db;
+                expect(db.before(40))
+                    .to.eql([
+                        {'timestamp': 30, 'name': 'moon', 'val': 'ecclipsed'},
+                        {'timestamp': 30, 'name': 'weather', 'val': 'foggy'},
+                    ]);
+            });
+
+        });
+
     });
 
     describe('state derivation', () => {
