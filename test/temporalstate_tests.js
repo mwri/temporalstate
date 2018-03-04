@@ -691,6 +691,12 @@ describe('temporalstate', () => {
                     .to.eql([{'timestamp': 20, 'name': 'weather', 'val': 'sunny'}]);
             });
 
+            it('returns the first change after the passed time stamp (timestamp matches existing change)', function () {
+                let db = this.db;
+                expect(db.after(10))
+                    .to.eql([{'timestamp': 20, 'name': 'weather', 'val': 'sunny'}]);
+            });
+
             it('returns the first change after the passed time stamp (multiple result)', function () {
                 let db = this.db;
                 expect(db.after(27))
@@ -727,6 +733,12 @@ describe('temporalstate', () => {
                 let db = this.db;
                 expect(db.before(23))
                     .to.eql([{'timestamp': 20, 'name': 'weather', 'val': 'sunny'}]);
+            });
+
+            it('returns the last change before the passed time stamp (timestamp matches existing change)', function () {
+                let db = this.db;
+                expect(db.before(20))
+                    .to.eql([{'timestamp': 10, 'name': 'weather', 'val': 'raining'}]);
             });
 
             it('returns the last change before the last timestamp (multiple result)', function () {
