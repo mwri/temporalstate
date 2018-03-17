@@ -4,9 +4,9 @@ import bintrees from 'bintrees';
 
 
 describe('temporalstate', () => {
-    
+
     describe('integration', () => {
-        
+
         it('bintrees behaves as expected', () => {
             let tree = new bintrees.RBTree(function (a, b) { return a - b; });
             expect(tree.size).to.eql(0);
@@ -415,7 +415,7 @@ describe('temporalstate', () => {
                 .to.be.an('array')
                 .is.lengthOf(0);
         });
-        
+
     });
 
     describe('change_list', () => {
@@ -613,7 +613,7 @@ describe('temporalstate', () => {
 
         });
 
-        describe('next', () => {
+        describe('next (no var specified)', () => {
 
             it('finds the next change (singular result)', function () {
                 let db = this.db;
@@ -650,10 +650,46 @@ describe('temporalstate', () => {
                 expect(db.next({'timestamp': 50, 'name': 'moon', 'val': 'super'}))
                     .to.be.an('null');
             });
-                
+
         });
 
-        describe('prev', () => {
+        describe('next (var specified)', () => {
+
+            it('finds the next change (target change is next)', function () {
+                let db = this.db;
+                expect(db.next({'timestamp': 10, 'name': 'weather', 'val': 'raining'}, 'weather'))
+                    .to.be.an('object')
+                    .to.eql({'timestamp': 20, 'name': 'weather', 'val': 'sunny'});
+            });
+
+            it('finds the next change (target change is not next)', function () {
+                let db = this.db;
+                expect(db.next({'timestamp': 20, 'name': 'weather', 'val': 'raining'}, 'weather'))
+                    .to.be.an('object')
+                    .to.eql({'timestamp': 30, 'name': 'weather', 'val': 'foggy'});
+            });
+
+            it('returns null when the current change is last (absolute)', function () {
+                let db = this.db;
+                expect(db.next({'timestamp': 50, 'name': 'moon', 'val': 'super'}, 'moon'))
+                    .to.be.an('null');
+            });
+
+            it('returns null when the current change is last (for the var)', function () {
+                let db = this.db;
+                expect(db.next({'timestamp': 30, 'name': 'weather', 'val': 'foggy'}, 'weather'))
+                    .to.be.an('null');
+            });
+
+            it('returns null when the var is unknown', function () {
+                let db = this.db;
+                expect(db.next({'timestamp': 20, 'name': 'weather', 'val': 'raining'}, 'unknown'))
+                    .to.be.an('null');
+            });
+
+        });
+
+        describe('prev (no var specified)', () => {
 
             it('finds the previous change (singular result)', function () {
                 let db = this.db;
@@ -690,7 +726,43 @@ describe('temporalstate', () => {
                 expect(db.prev({'timestamp': 10, 'name': 'weather', 'val': 'raining'}))
                     .to.be.an('null');
             });
-                
+
+        });
+
+        describe('prev (var specified)', () => {
+
+            it('finds the previous change (target change is previous)', function () {
+                let db = this.db;
+                expect(db.prev({'timestamp': 20, 'name': 'weather', 'val': 'sunny'}, 'weather'))
+                    .to.be.an('object')
+                    .to.eql({'timestamp': 10, 'name': 'weather', 'val': 'raining'});
+            });
+
+            it('finds the previous change (target change is not previous)', function () {
+                let db = this.db;
+                expect(db.prev({'timestamp': 30, 'name': 'weather', 'val': 'foggy'}, 'weather'))
+                    .to.be.an('object')
+                    .to.eql({'timestamp': 20, 'name': 'weather', 'val': 'sunny'});
+            });
+
+            it('returns null when the current change is first (absolute)', function () {
+                let db = this.db;
+                expect(db.prev({'timestamp': 10, 'name': 'weather', 'val': 'raining'}, 'weather'))
+                    .to.be.an('null');
+            });
+
+            it('returns null when the current change is first (for the var)', function () {
+                let db = this.db;
+                expect(db.prev({'timestamp': 25, 'name': 'sun', 'val': 'spotty'}, 'sun'))
+                    .to.be.an('null');
+            });
+
+            it('returns null when the var is unknown', function () {
+                let db = this.db;
+                expect(db.prev({'timestamp': 30, 'name': 'weather', 'val': 'foggy'}, 'unknown'))
+                    .to.be.an('null');
+            });
+
         });
 
         describe('at', () => {
@@ -803,12 +875,6 @@ describe('temporalstate', () => {
 
         });
 
-                //{'timestamp': 10, 'name': 'weather', 'val': 'raining'},
-                //{'timestamp': 20, 'name': 'weather', 'val': 'sunny'},
-                //{'timestamp': 25, 'name': 'sun', 'val': 'spotty'},
-                //{'timestamp': 30, 'name': 'moon', 'val': 'ecclipsed'},
-                //{'timestamp': 30, 'name': 'weather', 'val': 'foggy'},
-                //{'timestamp': 50, 'name': 'moon', 'val': 'super'},
         describe('between', () => {
 
             it('returns an empty list when there are no changes', function () {

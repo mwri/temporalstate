@@ -282,9 +282,9 @@ Or it could be:
 #### next
 
 This returns the next change (after the one passed as an
-argument). Much like [first](#first) and [last](#last),
-multiple changes may be returned if they are of the same
-time.
+argument). If one paramter is given then much like
+[first](#first) and [last](#last), multiple changes may
+be returned if they are of the same time.
 
 ```javascript
 let next_changes = db.next({timestamp: 20, name: 'weather', val: 'sunny'});
@@ -305,17 +305,21 @@ Or it could be:
 ]
 ```
 
+If a second parameter is given, then either `null` or the next
+change for that variable is returned (not an array of changes).
+
 #### prev
 
 This returns the previous change (after the one passed as an
-argument). Much like [prev](#prev) multiple changes may be
-returned if they are of the same time.
+argument). If one paramter is given then much like
+[prev](#prev) multiple changes may be returned if they are
+of the same time.
 
 ```javascript
 let prev_changes = db.prev({timestamp: 20, name: 'weather', val: 'sunny'});
 ```
 
-Here, `next_changes` will be a list of objects, like:
+Here, `prev_changes` will be a list of objects, like:
 
 ```javascript
 [ { timestamp: 12, name: 'sun', val: 'rising' },
@@ -329,6 +333,9 @@ Or it could be:
   { timestamp: 12, name: 'temperature', val: 14       },
 ]
 ```
+
+If a second parameter is given, then either `null` or the previous
+change for that variable is returned (not an array of changes).
 
 #### at
 
