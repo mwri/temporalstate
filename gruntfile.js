@@ -11,6 +11,7 @@ module.exports = function(grunt) {
             options: {
                 esversion: 6,
                 '-W083':  true,
+                laxbreak: true,
             }
         },
 

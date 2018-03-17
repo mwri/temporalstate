@@ -106,18 +106,19 @@ will work.
       1. [Functions](#functions).
          1. [constructor](#constructor).
          2. [add_change](#add_change).
-         3. [change_list](#change_list).
-         4. [var_list](#var_list).
-         5. [first](#first).
-         6. [last](#last).
-         7. [next](#next).
-         8. [prev](#prev).
-         9. [at](#at).
-         10. [after](#after).
-         11. [before](#before).
-         12. [state](#state).
-         13. [state_detail](#state_detail).
-         14. [change_cmp](#change_cmp).
+         3. [remove_change](#remove_change).
+         4. [change_list](#change_list).
+         5. [var_list](#var_list).
+         6. [first](#first).
+         7. [last](#last).
+         8. [next](#next).
+         9. [prev](#prev).
+         10. [at](#at).
+         11. [after](#after).
+         12. [before](#before).
+         13. [state](#state).
+         14. [state_detail](#state_detail).
+         15. [change_cmp](#change_cmp).
       2. [Events](#events).
          1. [new_var](#new_var).
          2. [add](#add).
@@ -164,6 +165,15 @@ becomes that value.
 db.add_change('weather', 'sunny', 20);
 db.add_change('weather', 'foggy', 40);
 db.add_change('moon', 'crescent', 3);
+```
+
+#### remove_change
+
+Removes a change. The call will have no affect if the change does not
+exist.
+
+```javascript
+db.remove_change({'timestamp': 20, 'name': 'weather', 'val': 'sunny'});
 ```
 
 #### change_list
@@ -559,13 +569,28 @@ db.add_change('weather', 'raining', 20);
 ```
 
 The **txn** event will be emitted with the first argument being
-`{add: {'timestamp': 20, 'name': 'weather', 'val': 'raining'}}`
+`{'add': {'timestamp': 20, 'name': 'weather', 'val': 'raining'}}`
 and the second being `[{'remove': {'timestamp': 20, 'name': 'weather',
 'val': 'sunny'}}, {'remove': {'timestamp': 30, 'name': 'weather',
 'val': 'raining'}}]`.
 
 Most changes will of course usually result in a transaction with
 a single operation which is identical to the actual change requested.
+
+If a change is due to a `remove_change` call instead of a `add_change`
+then there can only be one operation, but in addition to the **rm**
+event, a **txn** even is also emitted. In the case of the following
+removal for example:
+
+```javascript
+db.remove_change('weather', 'raining', 20);
+```
+
+...the **txn** event will be emitted with the first argument being
+`{'remove': {'timestamp': 20, 'name': 'weather', 'val': 'raining'}}`
+and the second being `[{'remove': {'timestamp': 20, 'name': 'weather',
+'val': 'sunny'}}, {'remove': {'timestamp': 30, 'name': 'weather',
+'val': 'raining'}}]`.
 
 ## Build
 
