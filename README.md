@@ -482,7 +482,7 @@ all sort element comparison functions.
 The order of changes is determined first by the time of the
 change, and then by the name of the state.
 
-### Functions
+### Events
 
 #### new_var
 
@@ -502,7 +502,7 @@ The **add** event is emitted when a change is added to the database.
 
 ```javascript
 db.on('add', (change) => {
-    console.log('added a change (at '+change.timestamp+' '+change.name+' = '+change.val)');
+    console.log('added a change (at '+change.timestamp+' '+change.name+' = '+change.val+')');
 });
 ```
 
@@ -515,8 +515,8 @@ The **rm** event is emitted when a change is eliminated from the
 database.
 
 ```javascript
-db.on('add', (change) => {
-    console.log('removed a change (at '+change.timestamp+' '+change.name+' = '+change.val)');
+db.on('rm', (change) => {
+    console.log('removed a change (at '+change.timestamp+' '+change.name+' = '+change.val+')');
 });
 ```
 
@@ -531,7 +531,7 @@ has a change.
 
 ```javascript
 db.on('change', (prev, new_val) => {
-    console.log('change '+prev.name+' = '+prev.val at '+prev.timestamp+' changing to '+new_val);
+    console.log('change '+prev.name+' = '+prev.val+' at '+prev.timestamp+' changing to '+new_val);
 });
 ```
 
