@@ -30,14 +30,14 @@ import temporalstate from 'temporalstate';
 
 let db = new temporalstate();
 
-db.add_change('weather', 'raining', 5);
-db.add_change('weather', 'sunny', 20);
-db.add_change('weather', 'foggy', 40);
-db.add_change('moon', 'crescent', 3);
-db.add_change('moon', 'full', 25);
-db.add_change('moon', 'super', 35);
-db.add_change('sun', 'rising', 12);
-db.add_change('sun', 'setting', 27);
+db.add_change({'timestamp': 5, 'name': 'weather', 'val': 'raining'});
+db.add_change({'timestamp': 20, 'name': 'weather', 'val': 'sunny'});
+db.add_change({'timestamp': 40, 'name': 'weather', 'val': 'foggy'});
+db.add_change({'timestamp': 3, 'name': 'moon', 'val': 'crescent'});
+db.add_change({'timestamp': 25, 'name': 'moon', 'val': 'full'});
+db.add_change({'timestamp': 35, 'name': 'moon', 'val': 'super'});
+db.add_change({'timestamp': 12, 'name': 'sun', 'val': 'rising'});
+db.add_change({'timestamp': 27, 'name': 'sun', 'val': 'setting'});
 ```
 
 It doesn't matter what order the state changes are added, the state of the
@@ -158,14 +158,14 @@ Adds a change to the temporal data. If the change is redundant
 or renders other current changes redundant they will be trimmed
 so that the data is always kept parsimonious.
 
-Three parameters are given, respectively the state name, the
-state value, and the time when the state of the given name
-becomes that value.
+A single object parameter with 'timestamp', 'name' and 'val' keys
+is required, these being the time of the change, the name of the
+variable changing and the value it is changing to.
 
 ```javascript
-db.add_change('weather', 'sunny', 20);
-db.add_change('weather', 'foggy', 40);
-db.add_change('moon', 'crescent', 3);
+db.add_change({'timestamp': 20, 'name': 'weather', 'val': 'sunny'});
+db.add_change({'timestamp': 40, 'name': 'weather', 'val': 'foggy'});
+db.add_change({'timestamp': 3, 'name': 'moon', 'val': 'crescent'});
 ```
 
 #### remove_change
@@ -571,15 +571,15 @@ For example, if the following changes are added (to an empty
 database):
 
 ```javascript
-db.add_change('weather', 'raining', 10);
-db.add_change('weather', 'sunny', 20);
-db.add_change('weather', 'raining', 30);
+db.add_change({'timestamp': 10, 'name': 'weather', 'val': 'raining'});
+db.add_change({'timestamp': 20, 'name': 'weather', 'val': 'sunny'});
+db.add_change({'timestamp': 30, 'name': 'weather', 'val': 'raining'});
 ```
 
 Then this change is added:
 
 ```javascript
-db.add_change('weather', 'raining', 20);
+db.add_change({'timestamp': 20, 'name': 'weather', 'val': 'raining'});
 ```
 
 The **txn_start** event will be emitted with the first argument being

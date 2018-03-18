@@ -11,3 +11,5 @@ watch_build:
 
 watch_test:
 	./node_modules/.bin/grunt watch:test
+
+.PHONY: build test
