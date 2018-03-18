@@ -416,6 +416,26 @@ describe('temporalstate', () => {
                 .is.lengthOf(0);
         });
 
+        it('a change to a value before a change to the same value eliminates the prior change', function () {
+            let db = this.db;
+            expect(db.change_list())
+                .to.be.an('array')
+                .is.lengthOf(0);
+            db.add_change({'timestamp': 10, 'name': 'weather', 'val': 'raining'});
+            db.add_change({'timestamp': 20, 'name': 'weather', 'val': 'sunny'});
+            expect(db.change_list())
+                .to.be.an('array')
+                .is.lengthOf(2)
+                .to.include({'timestamp': 10, 'name': 'weather', 'val': 'raining'})
+                .to.include({'timestamp': 20, 'name': 'weather', 'val': 'sunny'});
+            db.add_change({'timestamp': 15, 'name': 'weather', 'val': 'sunny'});
+            expect(db.change_list())
+                .to.be.an('array')
+                .is.lengthOf(2)
+                .to.include({'timestamp': 10, 'name': 'weather', 'val': 'raining'})
+                .to.include({'timestamp': 15, 'name': 'weather', 'val': 'sunny'});
+        });
+
     });
 
     describe('change_list', () => {
