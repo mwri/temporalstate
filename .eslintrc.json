@@ -39,7 +39,7 @@
         "camelcase": "off",
         "capitalized-comments": "off",
         "class-methods-use-this": "error",
-        "comma-dangle": "error",
+        "comma-dangle": "off",
         "comma-spacing": [
             "error",
             {
@@ -92,7 +92,7 @@
         "indent-legacy": "off",
         "init-declarations": "error",
         "jsx-quotes": "error",
-        "key-spacing": "error",
+        "key-spacing": "off",
         "keyword-spacing": "error",
         "line-comment-position": "error",
         "linebreak-style": [
@@ -107,7 +107,7 @@
         ],
         "max-depth": "error",
         "max-nested-callbacks": "error",
-        "max-statements": ["error", {"max": 40}],
+        "max-statements": ["error", {"max": 50}],
         "max-statements-per-line": "error",
         "multiline-comment-style": "error",
         "new-cap": "error",
@@ -116,6 +116,7 @@
         "newline-before-return": "off",
         "newline-per-chained-call": "error",
         "no-alert": "error",
+        "no-console": "warn",
         "no-array-constructor": "error",
         "no-await-in-loop": "error",
         "no-bitwise": "error",
