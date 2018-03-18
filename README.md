@@ -124,7 +124,8 @@ will work.
          2. [add](#add).
          3. [rm](#rm).
          4. [change](#change).
-         5. [txn](#txn).
+         5. [txn_start](#txn_start).
+         6. [txn_end](#txn_end).
 2. [Build](#build).
 
 ## Full API reference
@@ -491,6 +492,12 @@ change, and then by the name of the state.
 
 ### Events
 
+Events are emitted before a change actually takes effect. In the case
+of transaction events, the [txn_start](#txn_start), is emitted first of
+all, then applicable [add](#add) and [rm](#rm) events one by one proceeded
+by the execution of the respective add or remove action, and finally the
+[txn_end](#txn_end) event.
+
 #### new_var
 
 The **new_var** event is emitted when a new variable is realised.
@@ -542,20 +549,20 @@ db.on('change', (prev, new_val) => {
 });
 ```
 
-#### txn
+#### txn_start
 
-The **txn** event is emitted when any change occurs. A change may
-result in multiple operations however (and hence as a result a
+The **txn_start** event is emitted when any change occurs. A change
+may result in multiple operations however (and hence as a result a
 number of **add**, **rm** or **change** events may be emitted)
 so if it is desired to either capture these as one transaction
-or to capture the original change that caused them, the **txn**
-transaction should be used.
+or to capture the original requested change that caused them, the
+transaction events should be used (**txn_start** or **txn_end**).
 
 ```javascript
-db.on('txn', (change, ops) => {
+db.on('txn_start', (change, ops) => {
     console.log('change requested:');
     console.log(change);
-    console.log('operations required:');
+    console.log('operations which will be done:');
     console.log(ops);
 });
 ```
@@ -575,7 +582,7 @@ Then this change is added:
 db.add_change('weather', 'raining', 20);
 ```
 
-The **txn** event will be emitted with the first argument being
+The **txn_start** event will be emitted with the first argument being
 `{'add': {'timestamp': 20, 'name': 'weather', 'val': 'raining'}}`
 and the second being `[{'remove': {'timestamp': 20, 'name': 'weather',
 'val': 'sunny'}}, {'remove': {'timestamp': 30, 'name': 'weather',
@@ -586,18 +593,23 @@ a single operation which is identical to the actual change requested.
 
 If a change is due to a `remove_change` call instead of a `add_change`
 then there can only be one operation, but in addition to the **rm**
-event, a **txn** even is also emitted. In the case of the following
+event, a **txn_start** even is also emitted. In the case of the following
 removal for example:
 
 ```javascript
 db.remove_change('weather', 'raining', 20);
 ```
 
-...the **txn** event will be emitted with the first argument being
+...the **txn_start** event will be emitted with the first argument being
 `{'remove': {'timestamp': 20, 'name': 'weather', 'val': 'raining'}}`
 and the second being `[{'remove': {'timestamp': 20, 'name': 'weather',
-'val': 'sunny'}}, {'remove': {'timestamp': 30, 'name': 'weather',
 'val': 'raining'}}]`.
+
+#### txn_end
+
+The **txn_end** event is exactly like the **txn_start** event described
+above, except that it is emitted after all the changes have been
+executed.
 
 ## Build
 
