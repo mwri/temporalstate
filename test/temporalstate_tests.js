@@ -416,6 +416,20 @@ describe('temporalstate', () => {
                 .is.lengthOf(0);
         });
 
+        it('a null state before other states is redundant', function () {
+            let db = this.db;
+            db.add_change({'timestamp': 10, 'name': 'weather', 'val': 'raining'});
+            expect(db.change_list())
+                .to.be.an('array')
+                .is.lengthOf(1)
+                .to.include({'timestamp': 10, 'name': 'weather', 'val': 'raining'});
+            db.add_change({'timestamp': 9, 'name': 'weather', 'val': null});
+            expect(db.change_list())
+                .to.be.an('array')
+                .is.lengthOf(1)
+                .to.include({'timestamp': 10, 'name': 'weather', 'val': 'raining'});
+        });
+
         it('a change to a value before a change to the same value eliminates the prior change', function () {
             let db = this.db;
             expect(db.change_list())
