@@ -101,32 +101,34 @@ will work.
 ## Contents
 
 1. [Quick start](#quick-start).
-   1. [Contents](#contents).
-   2. [Full API reference](#full-api-reference).
-      1. [Functions](#functions).
-         1. [constructor](#constructor).
-         2. [add_change](#add_change).
-         3. [remove_change](#remove_change).
-         4. [change_list](#change_list).
-         5. [var_list](#var_list).
-         6. [first](#first).
-         7. [last](#last).
-         8. [next](#next).
-         9. [prev](#prev).
-         10. [at](#at).
-         11. [after](#after).
-         12. [before](#before).
-         13. [state](#state).
-         14. [state_detail](#state_detail).
-         15. [change_cmp](#change_cmp).
-      2. [Events](#events).
-         1. [new_var](#new_var).
-         2. [add](#add).
-         3. [rm](#rm).
-         4. [change](#change).
-         5. [txn_start](#txn_start).
-         6. [txn_end](#txn_end).
-2. [Build](#build).
+2. [Contents](#contents).
+3. [Full API reference](#full-api-reference).
+   1. [Functions](#functions).
+      1. [constructor](#constructor).
+      2. [add_change](#add_change).
+      3. [remove_change](#remove_change).
+      4. [change_list](#change_list).
+      5. [var_list](#var_list).
+      6. [first](#first).
+      7. [last](#last).
+      8. [next](#next).
+      9. [prev](#prev).
+      10. [at](#at).
+      11. [after](#after).
+      12. [before](#before).
+      13. [state](#state).
+      14. [state_detail](#state_detail).
+      15. [remove_var](#remove_var).
+      16. [change_cmp](#change_cmp).
+   2. [Events](#events).
+      1. [new_var](#new_var).
+      2. [rm_var](#rm_var).
+      3. [add](#add).
+      4. [rm](#rm).
+      5. [change](#change).
+      6. [txn_start](#txn_start).
+      7. [txn_end](#txn_end).
+4. [Build](#build).
 
 ## Full API reference
 
@@ -480,6 +482,25 @@ like:
 
 The ordering of the list is done by the state name
 
+#### remove_var
+
+When removing a change (explicitly or implicitly), if it is the last
+remaining change in the database, though there will be no changes
+for that variable any more, the variable will still exist; calling
+`var_list()` will list it.
+
+If it is desirable to get rid of it entirely, call `remove_var`
+and provide the variable name as a parameter. For example:
+
+```javascript
+db.remove_var('weather');
+```
+
+If a variable is removed `true` is returned, or else `false`.
+
+A variable is not removed if it does not exist, or if it has
+changes (i.e. it must be unused).
+
 #### change_cmp
 
 This is a static function, not a class method, it takes two
@@ -507,6 +528,17 @@ this.
 ```javascript
 db.on('new_var', (name) => {
     console.log('added "'+name+'", not seen before');
+});
+```
+
+#### rm_var
+
+The **rm_var** event is emitted when a new variable is removed.
+This can only happen as a result of a call to `remove_var`.
+
+```javascript
+db.on('rm_var', (name) => {
+    console.log('removed "'+name+'" variable');
 });
 ```
 

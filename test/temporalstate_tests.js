@@ -580,6 +580,94 @@ describe('temporalstate', () => {
 
     });
 
+    describe('remove_var', () => {
+
+        beforeEach(function () {
+            let db = new temporalstate();
+            for (let change of [
+                {'timestamp': 10, 'name': 'weather', 'val': 'raining'},
+                {'timestamp': 20, 'name': 'weather', 'val': 'sunny'},
+                {'timestamp': 25, 'name': 'sun', 'val': 'spotty'},
+                {'timestamp': 30, 'name': 'moon', 'val': 'ecclipsed'},
+                {'timestamp': 30, 'name': 'weather', 'val': 'foggy'},
+                {'timestamp': 50, 'name': 'moon', 'val': 'super'},
+            ]) {
+                db.add_change(change);
+            }
+            this.db = db;
+        });
+
+        it('does not remove a variable with changes', function () {
+            let db = this.db;
+            expect(db.var_list())
+                .to.be.an('array')
+                .is.length(3)
+                .to.include('weather').to.include('sun').to.include('moon');
+            db.remove_var('moon');
+            expect(db.var_list())
+                .to.be.an('array')
+                .is.length(3)
+                .to.include('weather').to.include('sun').to.include('moon');
+            db.remove_var('weather');
+            expect(db.var_list())
+                .to.be.an('array')
+                .is.length(3)
+                .to.include('weather').to.include('sun').to.include('moon');
+        });
+
+        it('removes an existing variable without changes', function () {
+            let db = this.db;
+            expect(db.var_list())
+                .to.be.an('array')
+                .is.length(3)
+                .to.include('weather').to.include('sun').to.include('moon');
+            db.change_list().filter((c) => c.name === 'moon').forEach((c) => db.remove_change(c));
+            db.remove_var('moon');
+            expect(db.var_list())
+                .to.be.an('array')
+                .is.length(2)
+                .to.include('weather').to.include('sun');
+            db.change_list().filter((c) => c.name === 'weather').forEach((c) => db.remove_change(c));
+            db.remove_var('weather');
+            expect(db.var_list())
+                .to.be.an('array')
+                .is.length(1)
+                .to.include('sun');
+        });
+
+        it('returns false when not removing a variable', function () {
+            let db = this.db;
+            expect(db.var_list())
+                .to.be.an('array')
+                .is.length(3)
+                .to.include('weather').to.include('sun').to.include('moon');
+            expect(db.remove_var('moon')).toBe(false);
+            expect(db.remove_var('weather')).toBe(false);
+        });
+
+        it('returns false when not removing a non existing variable', function () {
+            let db = this.db;
+            expect(db.var_list())
+                .to.be.an('array')
+                .is.length(3)
+                .to.include('weather').to.include('sun').to.include('moon');
+            expect(db.remove_var('wrong')).toBe(false);
+        });
+
+        it('returns true when successfully removing a variable', function () {
+            let db = this.db;
+            expect(db.var_list())
+                .to.be.an('array')
+                .is.length(3)
+                .to.include('weather').to.include('sun').to.include('moon');
+            db.change_list().filter((c) => c.name === 'moon').forEach((c) => db.remove_change(c));
+            expect(db.remove_var('moon')).toBe(true);
+            db.change_list().filter((c) => c.name === 'weather').forEach((c) => db.remove_change(c));
+            expect(db.remove_var('weather')).toBe(true);
+        });
+
+    });
+
     describe('stepping', () => {
 
         beforeEach(function () {
