@@ -784,6 +784,13 @@ describe('temporalstate', () => {
                     .to.eql({'timestamp': 20, 'name': 'weather', 'val': 'sunny'});
             });
 
+            it('finds the next change given a non existing change (target change is next)', function () {
+                let db = this.db;
+                expect(db.next({'timestamp': 11, 'name': 'weather', 'val': 'raining'}, 'weather'))
+                    .to.be.an('object')
+                    .to.eql({'timestamp': 20, 'name': 'weather', 'val': 'sunny'});
+            });
+
             it('finds the next change (target change is not next)', function () {
                 let db = this.db;
                 expect(db.next({'timestamp': 20, 'name': 'weather', 'val': 'raining'}, 'weather'))
@@ -856,6 +863,13 @@ describe('temporalstate', () => {
             it('finds the previous change (target change is previous)', function () {
                 let db = this.db;
                 expect(db.prev({'timestamp': 20, 'name': 'weather', 'val': 'sunny'}, 'weather'))
+                    .to.be.an('object')
+                    .to.eql({'timestamp': 10, 'name': 'weather', 'val': 'raining'});
+            });
+
+            it('finds the previous change given a non existing change (target change is previous)', function () {
+                let db = this.db;
+                expect(db.prev({'timestamp': 19, 'name': 'weather', 'val': 'sunny'}, 'weather'))
                     .to.be.an('object')
                     .to.eql({'timestamp': 10, 'name': 'weather', 'val': 'raining'});
             });
