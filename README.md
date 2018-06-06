@@ -224,12 +224,12 @@ Here, `vars` will be a list of variable names, like this:
 
 #### first
 
-Returns the first change(s) (i.e. the first ranked by time).
-The return value is a list, and will contain all the changes
-which have a time equal to the lowest time in the database.
-So this will probably usually be a list of one change, but
-could be any number. The return value can also be `null` if
-there are no changes in the database.
+Without a parameter, `first()` returns the first change(s) (i.e.
+the first ranked by time). The return value is a list, and will
+contain all the changes which have a time equal to the lowest time
+in the database. So this will probably usually be a list of one
+change, but could be any number. The return value can also be `null`
+if there are no changes in the database.
 
 ```javascript
 let first_changes = db.first();
@@ -254,12 +254,28 @@ Or it could be:
 The time will always be the same if there are multiple
 changes.
 
+If a variable name is passed as a parameter, only that
+variable is considered and a single change is returned instead
+of a list. For example:
+
+```javascript
+let first_change = db.first('weather');
+```
+
+Here `first_change` could be:
+
+```
+{ timestamp: 3, name: 'moon', val: 'crescent' }
+```
+
 #### last
 
 This is like [first](#first) but it returns the last change(s).
 Again there can be multiple changes if their time is the same
 and again the return value can instead be `null` if there are
-no changes in the database.
+no changes in the database. Also if a parameter is employed
+to provide a variable name, then a single change is returned
+(the last of that variable).
 
 ```javascript
 let last_changes = db.last();
@@ -280,6 +296,19 @@ Or it could be:
   { timestamp: 40, name: 'temperature', val: 18      },
   { timestamp: 40, name: 'weather',     val: 'foggy' },
 ]
+```
+If a variable name is passed as a parameter, only that
+variable is considered and a single change is returned instead
+of a list. For example:
+
+```javascript
+let last_change = db.last('weather');
+```
+
+Here `last_change` could be:
+
+```
+{ timestamp: 40, name: 'weather', val: 'foggy' }
 ```
 
 #### next

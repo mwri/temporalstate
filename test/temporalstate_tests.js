@@ -685,7 +685,7 @@ describe('temporalstate', () => {
             this.db = db;
         });
 
-        describe('first', () => {
+        describe('first (no var specified)', () => {
 
             it('returns null when there are no changes', function () {
                 let db = new temporalstate();
@@ -710,7 +710,28 @@ describe('temporalstate', () => {
 
         });
 
-        describe('last', () => {
+        describe('first (var specified)', () => {
+
+            it('returns null when there are no changes', function () {
+                let db = new temporalstate();
+                expect(db.first('weather')).to.eql(null);
+            });
+
+            it('returns the first change (is first of all changes)', function () {
+                let db = this.db;
+                expect(db.first('weather'))
+                    .to.eql({'timestamp': 10, 'name': 'weather', 'val': 'raining'});
+            });
+
+            it('returns the first change (prior changes are different vars)', function () {
+                let db = this.db;
+                expect(db.first('sun'))
+                    .to.eql({'timestamp': 25, 'name': 'sun', 'val': 'spotty'});
+            });
+
+        });
+
+        describe('last (no var specified)', () => {
 
             it('returns null when there are no changes', function () {
                 let db = new temporalstate();
@@ -731,6 +752,27 @@ describe('temporalstate', () => {
                         {'timestamp': 50, 'name': 'moon', 'val': 'super'},
                         {'timestamp': 50, 'name': 'sun', 'val': 'ecclipsed'},
                     ]);
+            });
+
+        });
+
+        describe('last (var specified)', () => {
+
+            it('returns null when there are no changes', function () {
+                let db = new temporalstate();
+                expect(db.last('weather')).to.eql(null);
+            });
+
+            it('returns the last change (is last of all changes)', function () {
+                let db = this.db;
+                expect(db.last('weather'))
+                    .to.eql({'timestamp': 30, 'name': 'weather', 'val': 'foggy'});
+            });
+
+            it('returns the first change (prior changes are different vars)', function () {
+                let db = this.db;
+                expect(db.last('sun'))
+                    .to.eql({'timestamp': 25, 'name': 'sun', 'val': 'spotty'});
             });
 
         });
