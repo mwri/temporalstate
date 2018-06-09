@@ -9,7 +9,9 @@
   "os": [
     "linux"
   ],
-  "main": "lib/temporalstate.js",
+  "main": "dist/temporalstate_es5.js",
+  "module": "lib/temporalstate.js",
+  "browser": "dist/temporalstate_es5.js",
   "license": "MIT",
   "url": "https://github.com/mwri/temporalstate",
   "scripts": {
