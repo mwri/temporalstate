@@ -1660,6 +1660,32 @@ describe('temporalstate', () => {
             expect(new_vars_emitted.sun).to.eql(undefined);
         });
 
+        it('emits "rm_var" when removing an unused variable', function () {
+            let db = this.db;
+            db.add_change({'timestamp': 10, 'name': 'weather', 'val': 'raining'});
+            let rm_vars_emitted = {};
+            db.on('rm_var', (name) => {
+                rm_vars_emitted[name] = true;
+            });
+            db.add_change({'timestamp': 10, 'name': 'weather', 'val': null});
+            expect(rm_vars_emitted.weather).to.eql(undefined);
+            expect(db.remove_var('weather')).to.eql(true);
+            expect(rm_vars_emitted.weather).to.eql(true);
+        });
+
+        it('does not emit "rm_var" when removing a variable still in use', function () {
+            let db = this.db;
+            db.add_change({'timestamp': 10, 'name': 'weather', 'val': 'raining'});
+            db.add_change({'timestamp': 20, 'name': 'weather', 'val': 'sunny'});
+            let rm_vars_emitted = {};
+            db.on('rm_var', (name) => {
+                rm_vars_emitted[name] = true;
+            });
+            db.add_change({'timestamp': 10, 'name': 'weather', 'val': null});
+            expect(db.remove_var('weather')).to.eql(false);
+            expect(rm_vars_emitted.weather).to.eql(undefined);
+        });
+
         it('emits "add" when adding change', function () {
             let db = this.db;
             let emitted_add;
