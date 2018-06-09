@@ -1526,350 +1526,350 @@ describe('temporalstate', () => {
 
         });
 
-        describe('with altenate valeqf', () => {
+    });
 
-            describe('add_change', () => {
+    describe('with altenate valeqf', () => {
 
-                beforeEach(function () {
-                    this.db = new temporalstate({
-                        'valeqf': function (a, b) { return a.complex === b.complex; }
-                    });
+        describe('add_change', () => {
+
+            beforeEach(function () {
+                this.db = new temporalstate({
+                    'valeqf': function (a, b) { return a.complex === b.complex; }
                 });
-
-                it('adds changes to change list', function () {
-                    let db = this.db;
-                    expect(db.change_list())
-                        .to.be.an('array')
-                        .is.lengthOf(0);
-                    // add change
-                    db.add_change({'timestamp': 10, 'name': 'weather', 'val': {'complex': 'raining'}});
-                    expect(db.change_list())
-                        .to.be.an('array')
-                        .is.lengthOf(1)
-                        .to.include({'timestamp': 10, 'name': 'weather', 'val': {'complex': 'raining'}});
-                    // add change changing existing state
-                    db.add_change({'timestamp': 20, 'name': 'weather', 'val': {'complex': 'sunny'}});
-                    expect(db.change_list())
-                        .to.be.an('array')
-                        .is.lengthOf(2)
-                        .to.include({'timestamp': 10, 'name': 'weather', 'val': {'complex': 'raining'}})
-                        .to.include({'timestamp': 20, 'name': 'weather', 'val': {'complex': 'sunny'}});
-                    // add change changing different, non existing state
-                    db.add_change({'timestamp': 30, 'name': 'moon', 'val': {'complex': 'full'}});
-                    expect(db.change_list())
-                        .to.be.an('array')
-                        .is.lengthOf(3)
-                        .to.include({'timestamp': 10, 'name': 'weather', 'val': {'complex': 'raining'}})
-                        .to.include({'timestamp': 20, 'name': 'weather', 'val': {'complex': 'sunny'}})
-                        .to.include({'timestamp': 30, 'name': 'moon', 'val': {'complex': 'full'}});
-                });
-
             });
 
-            describe('remove_change', () => {
-
-                beforeEach(function () {
-                    let db = new temporalstate({
-                        'valeqf': function (a, b) { return a.complex === b.complex; }
-                    });
-                    for (let change of [
-                        {'timestamp': 10, 'name': 'weather', 'val': {'complex': 'raining'}},
-                        {'timestamp': 20, 'name': 'weather', 'val': {'complex': 'sunny'}},
-                        {'timestamp': 25, 'name': 'sun', 'val': {'complex': 'spotty'}},
-                    ]) {
-                        db.add_change(change);
-                    }
-                    this.db = db;
-                });
-
-                it('does nothing for a non existing change', function () {
-                    let db = this.db;
-                    expect(db.change_list()).to.be.an('array').is.length(3);
-                    db.remove_change({'timestamp': 20, 'name': 'weather', 'val': {'complex': 'foggy'}});
-                    expect(db.change_list()).to.be.an('array').is.length(3);
-                    db.remove_change({'timestamp': 20, 'name': 'sun', 'val': {'complex': 'sunny'}});
-                    expect(db.change_list()).to.be.an('array').is.length(3);
-                    db.remove_change({'timestamp': 10, 'name': 'weather', 'val': {'complex': 'sunny'}});
-                    expect(db.change_list()).to.be.an('array').is.length(3);
-                    db.remove_change({'timestamp': 20, 'name': 'unknown', 'val': {'complex': 'sunny'}});
-                    expect(db.change_list()).to.be.an('array').is.length(3);
-                });
-
-                it('removes an existing change', function () {
-                    let db = this.db;
-                    expect(db.change_list())
-                        .to.be.an('array')
-                        .is.length(3);
-                    db.remove_change({'timestamp': 20, 'name': 'weather', 'val': {'complex': 'sunny'}});
-                    expect(db.change_list())
-                        .to.be.an('array')
-                        .is.length(2)
-                        .to.include({'timestamp': 10, 'name': 'weather', 'val': {'complex': 'raining'}})
-                        .to.include({'timestamp': 25, 'name': 'sun', 'val': {'complex': 'spotty'}});
-                    db.remove_change({'timestamp': 10, 'name': 'weather', 'val': {'complex': 'raining'}});
-                    expect(db.change_list())
-                        .to.be.an('array')
-                        .is.length(1)
-                        .to.include({'timestamp': 25, 'name': 'sun', 'val': {'complex': 'spotty'}});
-                    db.remove_change({'timestamp': 25, 'name': 'sun', 'val': {'complex': 'spotty'}});
-                    expect(db.change_list())
-                        .to.be.an('array')
-                        .is.length(0);
-                });
-
+            it('adds changes to change list', function () {
+                let db = this.db;
+                expect(db.change_list())
+                    .to.be.an('array')
+                    .is.lengthOf(0);
+                // add change
+                db.add_change({'timestamp': 10, 'name': 'weather', 'val': {'complex': 'raining'}});
+                expect(db.change_list())
+                    .to.be.an('array')
+                    .is.lengthOf(1)
+                    .to.include({'timestamp': 10, 'name': 'weather', 'val': {'complex': 'raining'}});
+                // add change changing existing state
+                db.add_change({'timestamp': 20, 'name': 'weather', 'val': {'complex': 'sunny'}});
+                expect(db.change_list())
+                    .to.be.an('array')
+                    .is.lengthOf(2)
+                    .to.include({'timestamp': 10, 'name': 'weather', 'val': {'complex': 'raining'}})
+                    .to.include({'timestamp': 20, 'name': 'weather', 'val': {'complex': 'sunny'}});
+                // add change changing different, non existing state
+                db.add_change({'timestamp': 30, 'name': 'moon', 'val': {'complex': 'full'}});
+                expect(db.change_list())
+                    .to.be.an('array')
+                    .is.lengthOf(3)
+                    .to.include({'timestamp': 10, 'name': 'weather', 'val': {'complex': 'raining'}})
+                    .to.include({'timestamp': 20, 'name': 'weather', 'val': {'complex': 'sunny'}})
+                    .to.include({'timestamp': 30, 'name': 'moon', 'val': {'complex': 'full'}});
             });
 
         });
 
-        describe('events', () => {
+        describe('remove_change', () => {
 
             beforeEach(function () {
-                this.db = new temporalstate();
-            });
-
-            it('emits "new_var" when adding change with new variable', function () {
-                let db = this.db;
-                let new_vars_emitted = {};
-                db.on('new_var', (name) => {
-                    new_vars_emitted[name] = true;
+                let db = new temporalstate({
+                    'valeqf': function (a, b) { return a.complex === b.complex; }
                 });
-                db.add_change({'timestamp': 10, 'name': 'weather', 'val': 'raining'});
-                expect(new_vars_emitted.weather).to.eql(true);
-                db.add_change({'timestamp': 20, 'name': 'moon', 'val': 'blood'});
-                expect(new_vars_emitted.moon).to.eql(true);
-                db.add_change({'timestamp': 30, 'name': 'sun', 'val': 'hot'});
-                expect(new_vars_emitted.sun).to.eql(true);
+                for (let change of [
+                    {'timestamp': 10, 'name': 'weather', 'val': {'complex': 'raining'}},
+                    {'timestamp': 20, 'name': 'weather', 'val': {'complex': 'sunny'}},
+                    {'timestamp': 25, 'name': 'sun', 'val': {'complex': 'spotty'}},
+                ]) {
+                    db.add_change(change);
+                }
+                this.db = db;
             });
 
-            it('does not emit "new_var" when adding change with previously known variable', function () {
+            it('does nothing for a non existing change', function () {
                 let db = this.db;
-                db.add_change({'timestamp': 1, 'name': 'weather', 'val': 'sunny'});
-                db.add_change({'timestamp': 2, 'name': 'moon', 'val': 'blue'});
-                db.add_change({'timestamp': 3, 'name': 'sun', 'val': 'nova'});
-                let new_vars_emitted = {};
-                db.on('new_var', (name) => {
-                    new_vars_emitted[name] = true;
-                });
-                db.add_change({'timestamp': 10, 'name': 'weather', 'val': 'raining'});
-                expect(new_vars_emitted.weather).to.eql(undefined);
-                db.add_change({'timestamp': 20, 'name': 'moon', 'val': 'blood'});
-                expect(new_vars_emitted.moon).to.eql(undefined);
-                db.add_change({'timestamp': 30, 'name': 'sun', 'val': 'hot'});
-                expect(new_vars_emitted.sun).to.eql(undefined);
+                expect(db.change_list()).to.be.an('array').is.length(3);
+                db.remove_change({'timestamp': 20, 'name': 'weather', 'val': {'complex': 'foggy'}});
+                expect(db.change_list()).to.be.an('array').is.length(3);
+                db.remove_change({'timestamp': 20, 'name': 'sun', 'val': {'complex': 'sunny'}});
+                expect(db.change_list()).to.be.an('array').is.length(3);
+                db.remove_change({'timestamp': 10, 'name': 'weather', 'val': {'complex': 'sunny'}});
+                expect(db.change_list()).to.be.an('array').is.length(3);
+                db.remove_change({'timestamp': 20, 'name': 'unknown', 'val': {'complex': 'sunny'}});
+                expect(db.change_list()).to.be.an('array').is.length(3);
             });
 
-            it('emits "add" when adding change', function () {
-                let db = this.db;
-                let emitted_add;
-                db.on('add', (change) => {
-                    emitted_add = change;
-                });
-                db.add_change({'timestamp': 10, 'name': 'weather', 'val': 'raining'});
-                expect(emitted_add).to.eql({'timestamp': 10, 'name': 'weather', 'val': 'raining'});
-            });
-
-            it('does not emit "add" when change is redundant', function () {
-                let db = this.db;
-                db.add_change({'timestamp': 10, 'name': 'weather', 'val': 'raining'});
-                let emitted_add;
-                db.on('add', (change) => {
-                    emitted_add = change;
-                });
-                db.add_change({'timestamp': 10, 'name': 'weather', 'val': 'raining'});
-                expect(emitted_add).to.eql(undefined);
-            });
-
-            it('emits "rm" when adding change which renders existing change redundant', function () {
-                let db = this.db;
-                db.add_change({'timestamp': 10, 'name': 'weather', 'val': 'raining'});
-                db.add_change({'timestamp': 20, 'name': 'weather', 'val': 'sunny'});
-                let emitted_rm;
-                db.on('rm', (change) => {
-                    emitted_rm = change;
-                });
-                db.add_change({'timestamp': 10, 'name': 'weather', 'val': 'sunny'});
-                expect(emitted_rm).to.eql({'timestamp': 20, 'name': 'weather', 'val': 'sunny'});
-            });
-
-            it('emits "rm" when adding change which renders existing change redundant', function () {
-                let db = this.db;
-                db.add_change({'timestamp': 10, 'name': 'weather', 'val': 'raining'});
-                db.add_change({'timestamp': 20, 'name': 'weather', 'val': 'sunny'});
-                let emitted_rm;
-                db.on('rm', (change) => {
-                    emitted_rm = change;
-                });
-                db.add_change({'timestamp': 10, 'name': 'weather', 'val': 'sunny'});
-                expect(emitted_rm).to.eql({'timestamp': 20, 'name': 'weather', 'val': 'sunny'});
-            });
-
-            it('does not emit "rm" when adding change which renders no existing change redundant', function () {
-                let db = this.db;
-                db.add_change({'timestamp': 10, 'name': 'weather', 'val': 'raining'});
-                db.add_change({'timestamp': 20, 'name': 'weather', 'val': 'sunny'});
-                let emitted_rm;
-                db.on('rm', (change) => {
-                    emitted_rm = change;
-                });
-                db.add_change({'timestamp': 10, 'name': 'weather', 'val': 'fair'});
-                expect(emitted_rm).to.eql(undefined);
-            });
-
-            it('emits "change" when changing existing var time to a different value', function () {
-                let db = this.db;
-                db.add_change({'timestamp': 10, 'name': 'weather', 'val': 'raining'});
-                let emitted_change;
-                db.on('change', (orig, new_val) => {
-                    emitted_change = [orig, new_val];
-                });
-                db.add_change({'timestamp': 10, 'name': 'weather', 'val': 'sunny'});
-                expect(emitted_change).to.eql([{'timestamp': 10, 'name': 'weather', 'val': 'raining'}, 'sunny']);
-            });
-
-            it('emits "change" when changing existing var time to the same value', function () {
-                let db = this.db;
-                db.add_change({'timestamp': 10, 'name': 'weather', 'val': 'raining'});
-                let emitted_change;
-                db.on('change', (orig, new_val) => {
-                    emitted_change = [orig, new_val];
-                });
-                db.add_change({'timestamp': 10, 'name': 'weather', 'val': 'raining'});
-                expect(emitted_change).to.eql(undefined);
-            });
-
-            it('emits "rm" when removing a change', function () {
-                let db = this.db;
-                db.add_change({'timestamp': 10, 'name': 'weather', 'val': 'raining'});
-                db.add_change({'timestamp': 20, 'name': 'weather', 'val': 'sunny'});
-                let emitted_change;
-                db.on('rm', (change) => {
-                    emitted_change = change;
-                });
-                db.remove_change({'timestamp': 10, 'name': 'weather', 'val': 'raining'});
-                expect(emitted_change).to.eql({'timestamp': 10, 'name': 'weather', 'val': 'raining'});
-            });
-
-            it('emits "txn_start" when removing a change', function () {
-                let db = this.db;
-                db.add_change({'timestamp': 10, 'name': 'weather', 'val': 'raining'});
-                db.add_change({'timestamp': 20, 'name': 'weather', 'val': 'sunny'});
-                let emitted_txn;
-                db.on('txn_start', (change, ops) => {
-                    emitted_txn = [change, ops];
-                });
-                db.remove_change({'timestamp': 10, 'name': 'weather', 'val': 'raining'});
-                expect(emitted_txn).to.eql([
-                    {'remove': {'timestamp': 10, 'name': 'weather', 'val': 'raining'}},
-                    [{'remove': {'timestamp': 10, 'name': 'weather', 'val': 'raining'}}],
-                ]);
-            });
-
-            it('emits "rm" when removing a non existing change', function () {
-                let db = this.db;
-                db.add_change({'timestamp': 10, 'name': 'weather', 'val': 'raining'});
-                db.add_change({'timestamp': 20, 'name': 'weather', 'val': 'sunny'});
-                let emitted_changes = 0;
-                db.on('rm', (change) => {
-                    emitted_changes++;
-                });
-                db.remove_change({'timestamp': 20, 'name': 'weather', 'val': 'foggy'});
-                expect(emitted_changes).to.eql(0);
-                db.remove_change({'timestamp': 20, 'name': 'sun', 'val': 'sunny'});
-                expect(emitted_changes).to.eql(0);
-                db.remove_change({'timestamp': 10, 'name': 'weather', 'val': 'sunny'});
-                expect(emitted_changes).to.eql(0);
-                db.remove_change({'timestamp': 20, 'name': 'unknown', 'val': 'sunny'});
-                expect(emitted_changes).to.eql(0);
-            });
-
-            it('emits "txn_start" with multiple values when mutliple changes happen at once', function () {
+            it('removes an existing change', function () {
                 let db = this.db;
                 expect(db.change_list())
                     .to.be.an('array')
-                    .is.lengthOf(0);
-                db.add_change({'timestamp': 10, 'name': 'weather', 'val': 'raining'});
-                db.add_change({'timestamp': 20, 'name': 'weather', 'val': 'sunny'});
-                db.add_change({'timestamp': 30, 'name': 'weather', 'val': 'raining'});
+                    .is.length(3);
+                db.remove_change({'timestamp': 20, 'name': 'weather', 'val': {'complex': 'sunny'}});
+                expect(db.change_list())
+                    .to.be.an('array')
+                    .is.length(2)
+                    .to.include({'timestamp': 10, 'name': 'weather', 'val': {'complex': 'raining'}})
+                    .to.include({'timestamp': 25, 'name': 'sun', 'val': {'complex': 'spotty'}});
+                db.remove_change({'timestamp': 10, 'name': 'weather', 'val': {'complex': 'raining'}});
+                expect(db.change_list())
+                    .to.be.an('array')
+                    .is.length(1)
+                    .to.include({'timestamp': 25, 'name': 'sun', 'val': {'complex': 'spotty'}});
+                db.remove_change({'timestamp': 25, 'name': 'sun', 'val': {'complex': 'spotty'}});
+                expect(db.change_list())
+                    .to.be.an('array')
+                    .is.length(0);
+            });
+
+        });
+
+    });
+
+    describe('events', () => {
+
+        beforeEach(function () {
+            this.db = new temporalstate();
+        });
+
+        it('emits "new_var" when adding change with new variable', function () {
+            let db = this.db;
+            let new_vars_emitted = {};
+            db.on('new_var', (name) => {
+                new_vars_emitted[name] = true;
+            });
+            db.add_change({'timestamp': 10, 'name': 'weather', 'val': 'raining'});
+            expect(new_vars_emitted.weather).to.eql(true);
+            db.add_change({'timestamp': 20, 'name': 'moon', 'val': 'blood'});
+            expect(new_vars_emitted.moon).to.eql(true);
+            db.add_change({'timestamp': 30, 'name': 'sun', 'val': 'hot'});
+            expect(new_vars_emitted.sun).to.eql(true);
+        });
+
+        it('does not emit "new_var" when adding change with previously known variable', function () {
+            let db = this.db;
+            db.add_change({'timestamp': 1, 'name': 'weather', 'val': 'sunny'});
+            db.add_change({'timestamp': 2, 'name': 'moon', 'val': 'blue'});
+            db.add_change({'timestamp': 3, 'name': 'sun', 'val': 'nova'});
+            let new_vars_emitted = {};
+            db.on('new_var', (name) => {
+                new_vars_emitted[name] = true;
+            });
+            db.add_change({'timestamp': 10, 'name': 'weather', 'val': 'raining'});
+            expect(new_vars_emitted.weather).to.eql(undefined);
+            db.add_change({'timestamp': 20, 'name': 'moon', 'val': 'blood'});
+            expect(new_vars_emitted.moon).to.eql(undefined);
+            db.add_change({'timestamp': 30, 'name': 'sun', 'val': 'hot'});
+            expect(new_vars_emitted.sun).to.eql(undefined);
+        });
+
+        it('emits "add" when adding change', function () {
+            let db = this.db;
+            let emitted_add;
+            db.on('add', (change) => {
+                emitted_add = change;
+            });
+            db.add_change({'timestamp': 10, 'name': 'weather', 'val': 'raining'});
+            expect(emitted_add).to.eql({'timestamp': 10, 'name': 'weather', 'val': 'raining'});
+        });
+
+        it('does not emit "add" when change is redundant', function () {
+            let db = this.db;
+            db.add_change({'timestamp': 10, 'name': 'weather', 'val': 'raining'});
+            let emitted_add;
+            db.on('add', (change) => {
+                emitted_add = change;
+            });
+            db.add_change({'timestamp': 10, 'name': 'weather', 'val': 'raining'});
+            expect(emitted_add).to.eql(undefined);
+        });
+
+        it('emits "rm" when adding change which renders existing change redundant', function () {
+            let db = this.db;
+            db.add_change({'timestamp': 10, 'name': 'weather', 'val': 'raining'});
+            db.add_change({'timestamp': 20, 'name': 'weather', 'val': 'sunny'});
+            let emitted_rm;
+            db.on('rm', (change) => {
+                emitted_rm = change;
+            });
+            db.add_change({'timestamp': 10, 'name': 'weather', 'val': 'sunny'});
+            expect(emitted_rm).to.eql({'timestamp': 20, 'name': 'weather', 'val': 'sunny'});
+        });
+
+        it('emits "rm" when adding change which renders existing change redundant', function () {
+            let db = this.db;
+            db.add_change({'timestamp': 10, 'name': 'weather', 'val': 'raining'});
+            db.add_change({'timestamp': 20, 'name': 'weather', 'val': 'sunny'});
+            let emitted_rm;
+            db.on('rm', (change) => {
+                emitted_rm = change;
+            });
+            db.add_change({'timestamp': 10, 'name': 'weather', 'val': 'sunny'});
+            expect(emitted_rm).to.eql({'timestamp': 20, 'name': 'weather', 'val': 'sunny'});
+        });
+
+        it('does not emit "rm" when adding change which renders no existing change redundant', function () {
+            let db = this.db;
+            db.add_change({'timestamp': 10, 'name': 'weather', 'val': 'raining'});
+            db.add_change({'timestamp': 20, 'name': 'weather', 'val': 'sunny'});
+            let emitted_rm;
+            db.on('rm', (change) => {
+                emitted_rm = change;
+            });
+            db.add_change({'timestamp': 10, 'name': 'weather', 'val': 'fair'});
+            expect(emitted_rm).to.eql(undefined);
+        });
+
+        it('emits "change" when changing existing var time to a different value', function () {
+            let db = this.db;
+            db.add_change({'timestamp': 10, 'name': 'weather', 'val': 'raining'});
+            let emitted_change;
+            db.on('change', (orig, new_val) => {
+                emitted_change = [orig, new_val];
+            });
+            db.add_change({'timestamp': 10, 'name': 'weather', 'val': 'sunny'});
+            expect(emitted_change).to.eql([{'timestamp': 10, 'name': 'weather', 'val': 'raining'}, 'sunny']);
+        });
+
+        it('emits "change" when changing existing var time to the same value', function () {
+            let db = this.db;
+            db.add_change({'timestamp': 10, 'name': 'weather', 'val': 'raining'});
+            let emitted_change;
+            db.on('change', (orig, new_val) => {
+                emitted_change = [orig, new_val];
+            });
+            db.add_change({'timestamp': 10, 'name': 'weather', 'val': 'raining'});
+            expect(emitted_change).to.eql(undefined);
+        });
+
+        it('emits "rm" when removing a change', function () {
+            let db = this.db;
+            db.add_change({'timestamp': 10, 'name': 'weather', 'val': 'raining'});
+            db.add_change({'timestamp': 20, 'name': 'weather', 'val': 'sunny'});
+            let emitted_change;
+            db.on('rm', (change) => {
+                emitted_change = change;
+            });
+            db.remove_change({'timestamp': 10, 'name': 'weather', 'val': 'raining'});
+            expect(emitted_change).to.eql({'timestamp': 10, 'name': 'weather', 'val': 'raining'});
+        });
+
+        it('emits "txn_start" when removing a change', function () {
+            let db = this.db;
+            db.add_change({'timestamp': 10, 'name': 'weather', 'val': 'raining'});
+            db.add_change({'timestamp': 20, 'name': 'weather', 'val': 'sunny'});
+            let emitted_txn;
+            db.on('txn_start', (change, ops) => {
+                emitted_txn = [change, ops];
+            });
+            db.remove_change({'timestamp': 10, 'name': 'weather', 'val': 'raining'});
+            expect(emitted_txn).to.eql([
+                {'remove': {'timestamp': 10, 'name': 'weather', 'val': 'raining'}},
+                [{'remove': {'timestamp': 10, 'name': 'weather', 'val': 'raining'}}],
+            ]);
+        });
+
+        it('emits "rm" when removing a non existing change', function () {
+            let db = this.db;
+            db.add_change({'timestamp': 10, 'name': 'weather', 'val': 'raining'});
+            db.add_change({'timestamp': 20, 'name': 'weather', 'val': 'sunny'});
+            let emitted_changes = 0;
+            db.on('rm', (change) => {
+                emitted_changes++;
+            });
+            db.remove_change({'timestamp': 20, 'name': 'weather', 'val': 'foggy'});
+            expect(emitted_changes).to.eql(0);
+            db.remove_change({'timestamp': 20, 'name': 'sun', 'val': 'sunny'});
+            expect(emitted_changes).to.eql(0);
+            db.remove_change({'timestamp': 10, 'name': 'weather', 'val': 'sunny'});
+            expect(emitted_changes).to.eql(0);
+            db.remove_change({'timestamp': 20, 'name': 'unknown', 'val': 'sunny'});
+            expect(emitted_changes).to.eql(0);
+        });
+
+        it('emits "txn_start" with multiple values when mutliple changes happen at once', function () {
+            let db = this.db;
+            expect(db.change_list())
+                .to.be.an('array')
+                .is.lengthOf(0);
+            db.add_change({'timestamp': 10, 'name': 'weather', 'val': 'raining'});
+            db.add_change({'timestamp': 20, 'name': 'weather', 'val': 'sunny'});
+            db.add_change({'timestamp': 30, 'name': 'weather', 'val': 'raining'});
+            expect(db.change_list())
+                .to.be.an('array')
+                .is.lengthOf(3)
+                .to.include({'timestamp': 10, 'name': 'weather', 'val': 'raining'})
+                .to.include({'timestamp': 20, 'name': 'weather', 'val': 'sunny'})
+                .to.include({'timestamp': 30, 'name': 'weather', 'val': 'raining'});
+            let emitted_txn;
+            db.on('txn_start', (change, ops) => {
+                emitted_txn = [change, ops];
+            });
+            db.add_change({'timestamp': 20, 'name': 'weather', 'val': 'raining'});
+            expect(emitted_txn).to.eql([
+                {'add': {'timestamp': 20, 'name': 'weather', 'val': 'raining'}},
+                [{'remove': {'timestamp': 20, 'name': 'weather', 'val': 'sunny'}},
+                 {'remove': {'timestamp': 30, 'name': 'weather', 'val': 'raining'}}]
+            ]);
+        });
+
+        it('emits "txn_start" before changes occur', function () {
+            let db = this.db;
+            expect(db.change_list())
+                .to.be.an('array')
+                .is.lengthOf(0);
+            db.add_change({'timestamp': 10, 'name': 'weather', 'val': 'raining'});
+            db.add_change({'timestamp': 20, 'name': 'weather', 'val': 'sunny'});
+            db.add_change({'timestamp': 30, 'name': 'weather', 'val': 'raining'});
+            expect(db.change_list())
+                .to.be.an('array')
+                .is.lengthOf(3)
+                .to.include({'timestamp': 10, 'name': 'weather', 'val': 'raining'})
+                .to.include({'timestamp': 20, 'name': 'weather', 'val': 'sunny'})
+                .to.include({'timestamp': 30, 'name': 'weather', 'val': 'raining'});
+            let emitted_txn;
+            db.on('txn_start', (change, ops) => {
+                emitted_txn = [change, ops];
                 expect(db.change_list())
                     .to.be.an('array')
                     .is.lengthOf(3)
                     .to.include({'timestamp': 10, 'name': 'weather', 'val': 'raining'})
                     .to.include({'timestamp': 20, 'name': 'weather', 'val': 'sunny'})
                     .to.include({'timestamp': 30, 'name': 'weather', 'val': 'raining'});
-                let emitted_txn;
-                db.on('txn_start', (change, ops) => {
-                    emitted_txn = [change, ops];
-                });
-                db.add_change({'timestamp': 20, 'name': 'weather', 'val': 'raining'});
-                expect(emitted_txn).to.eql([
-                    {'add': {'timestamp': 20, 'name': 'weather', 'val': 'raining'}},
-                    [{'remove': {'timestamp': 20, 'name': 'weather', 'val': 'sunny'}},
-                     {'remove': {'timestamp': 30, 'name': 'weather', 'val': 'raining'}}]
-                ]);
             });
+            db.add_change({'timestamp': 20, 'name': 'weather', 'val': 'raining'});
+            expect(emitted_txn).to.eql([
+                {'add': {'timestamp': 20, 'name': 'weather', 'val': 'raining'}},
+                [{'remove': {'timestamp': 20, 'name': 'weather', 'val': 'sunny'}},
+                 {'remove': {'timestamp': 30, 'name': 'weather', 'val': 'raining'}}]
+            ]);
+        });
 
-            it('emits "txn_start" before changes occur', function () {
-                let db = this.db;
+        it('emits "txn_end" after changes occur', function () {
+            let db = this.db;
+            expect(db.change_list())
+                .to.be.an('array')
+                .is.lengthOf(0);
+            db.add_change({'timestamp': 10, 'name': 'weather', 'val': 'raining'});
+            db.add_change({'timestamp': 20, 'name': 'weather', 'val': 'sunny'});
+            db.add_change({'timestamp': 30, 'name': 'weather', 'val': 'raining'});
+            expect(db.change_list())
+                .to.be.an('array')
+                .is.lengthOf(3)
+                .to.include({'timestamp': 10, 'name': 'weather', 'val': 'raining'})
+                .to.include({'timestamp': 20, 'name': 'weather', 'val': 'sunny'})
+                .to.include({'timestamp': 30, 'name': 'weather', 'val': 'raining'});
+            let emitted_txn;
+            db.on('txn_end', (change, ops) => {
+                emitted_txn = [change, ops];
                 expect(db.change_list())
                     .to.be.an('array')
-                    .is.lengthOf(0);
-                db.add_change({'timestamp': 10, 'name': 'weather', 'val': 'raining'});
-                db.add_change({'timestamp': 20, 'name': 'weather', 'val': 'sunny'});
-                db.add_change({'timestamp': 30, 'name': 'weather', 'val': 'raining'});
-                expect(db.change_list())
-                    .to.be.an('array')
-                    .is.lengthOf(3)
-                    .to.include({'timestamp': 10, 'name': 'weather', 'val': 'raining'})
-                    .to.include({'timestamp': 20, 'name': 'weather', 'val': 'sunny'})
-                    .to.include({'timestamp': 30, 'name': 'weather', 'val': 'raining'});
-                let emitted_txn;
-                db.on('txn_start', (change, ops) => {
-                    emitted_txn = [change, ops];
-                    expect(db.change_list())
-                        .to.be.an('array')
-                        .is.lengthOf(3)
-                        .to.include({'timestamp': 10, 'name': 'weather', 'val': 'raining'})
-                        .to.include({'timestamp': 20, 'name': 'weather', 'val': 'sunny'})
-                        .to.include({'timestamp': 30, 'name': 'weather', 'val': 'raining'});
-                });
-                db.add_change({'timestamp': 20, 'name': 'weather', 'val': 'raining'});
-                expect(emitted_txn).to.eql([
-                    {'add': {'timestamp': 20, 'name': 'weather', 'val': 'raining'}},
-                    [{'remove': {'timestamp': 20, 'name': 'weather', 'val': 'sunny'}},
-                     {'remove': {'timestamp': 30, 'name': 'weather', 'val': 'raining'}}]
-                ]);
+                    .is.lengthOf(1)
+                    .to.include({'timestamp': 10, 'name': 'weather', 'val': 'raining'});
             });
-
-            it('emits "txn_end" after changes occur', function () {
-                let db = this.db;
-                expect(db.change_list())
-                    .to.be.an('array')
-                    .is.lengthOf(0);
-                db.add_change({'timestamp': 10, 'name': 'weather', 'val': 'raining'});
-                db.add_change({'timestamp': 20, 'name': 'weather', 'val': 'sunny'});
-                db.add_change({'timestamp': 30, 'name': 'weather', 'val': 'raining'});
-                expect(db.change_list())
-                    .to.be.an('array')
-                    .is.lengthOf(3)
-                    .to.include({'timestamp': 10, 'name': 'weather', 'val': 'raining'})
-                    .to.include({'timestamp': 20, 'name': 'weather', 'val': 'sunny'})
-                    .to.include({'timestamp': 30, 'name': 'weather', 'val': 'raining'});
-                let emitted_txn;
-                db.on('txn_end', (change, ops) => {
-                    emitted_txn = [change, ops];
-                    expect(db.change_list())
-                        .to.be.an('array')
-                        .is.lengthOf(1)
-                        .to.include({'timestamp': 10, 'name': 'weather', 'val': 'raining'});
-                });
-                db.add_change({'timestamp': 20, 'name': 'weather', 'val': 'raining'});
-                expect(emitted_txn).to.eql([
-                    {'add': {'timestamp': 20, 'name': 'weather', 'val': 'raining'}},
-                    [{'remove': {'timestamp': 20, 'name': 'weather', 'val': 'sunny'}},
-                     {'remove': {'timestamp': 30, 'name': 'weather', 'val': 'raining'}}]
-                ]);
-            });
-
+            db.add_change({'timestamp': 20, 'name': 'weather', 'val': 'raining'});
+            expect(emitted_txn).to.eql([
+                {'add': {'timestamp': 20, 'name': 'weather', 'val': 'raining'}},
+                [{'remove': {'timestamp': 20, 'name': 'weather', 'val': 'sunny'}},
+                 {'remove': {'timestamp': 30, 'name': 'weather', 'val': 'raining'}}]
+            ]);
         });
 
     });
