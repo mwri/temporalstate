@@ -162,8 +162,16 @@ describe('temporalstate', () => {
 
     describe('constructor', () => {
 
-        it('does not fail', () => {
+        it('does not fail (no param)', () => {
             let db = new temporalstate();
+        });
+
+        it('does not fail (empty params)', () => {
+            let db = new temporalstate({});
+        });
+
+        it('does not fail (valeqf param)', () => {
+            let db = new temporalstate({'valeqf': function() { return true; }});
         });
 
         describe('initial object state', () => {
@@ -543,7 +551,7 @@ describe('temporalstate', () => {
             this.db = db;
         });
 
-        it('removes an existing change', function () {
+        it('does nothing for a non existing change', function () {
             let db = this.db;
             expect(db.change_list()).to.be.an('array').is.length(3);
             db.remove_change({'timestamp': 20, 'name': 'weather', 'val': 'foggy'});
@@ -556,7 +564,7 @@ describe('temporalstate', () => {
             expect(db.change_list()).to.be.an('array').is.length(3);
         });
 
-        it('does nothing for a non existing change', function () {
+        it('removes an existing change', function () {
             let db = this.db;
             expect(db.change_list())
                 .to.be.an('array')
@@ -1514,6 +1522,101 @@ describe('temporalstate', () => {
                         {'from': {'timestamp': 50, 'name': 'moon', 'val': 'super'}, 'to': null},
                         {'from': {'timestamp': 25, 'name': 'sun', 'val': 'spotty'}, 'to': null},
                     ]);
+            });
+
+        });
+
+        describe('with altenate valeqf', () => {
+
+            describe('add_change', () => {
+
+                beforeEach(function () {
+                    this.db = new temporalstate({
+                        'valeqf': function (a, b) { return a.complex === b.complex; }
+                    });
+                });
+
+                it('adds changes to change list', function () {
+                    let db = this.db;
+                    expect(db.change_list())
+                        .to.be.an('array')
+                        .is.lengthOf(0);
+                    // add change
+                    db.add_change({'timestamp': 10, 'name': 'weather', 'val': {'complex': 'raining'}});
+                    expect(db.change_list())
+                        .to.be.an('array')
+                        .is.lengthOf(1)
+                        .to.include({'timestamp': 10, 'name': 'weather', 'val': {'complex': 'raining'}});
+                    // add change changing existing state
+                    db.add_change({'timestamp': 20, 'name': 'weather', 'val': {'complex': 'sunny'}});
+                    expect(db.change_list())
+                        .to.be.an('array')
+                        .is.lengthOf(2)
+                        .to.include({'timestamp': 10, 'name': 'weather', 'val': {'complex': 'raining'}})
+                        .to.include({'timestamp': 20, 'name': 'weather', 'val': {'complex': 'sunny'}});
+                    // add change changing different, non existing state
+                    db.add_change({'timestamp': 30, 'name': 'moon', 'val': {'complex': 'full'}});
+                    expect(db.change_list())
+                        .to.be.an('array')
+                        .is.lengthOf(3)
+                        .to.include({'timestamp': 10, 'name': 'weather', 'val': {'complex': 'raining'}})
+                        .to.include({'timestamp': 20, 'name': 'weather', 'val': {'complex': 'sunny'}})
+                        .to.include({'timestamp': 30, 'name': 'moon', 'val': {'complex': 'full'}});
+                });
+
+            });
+
+            describe('remove_change', () => {
+
+                beforeEach(function () {
+                    let db = new temporalstate({
+                        'valeqf': function (a, b) { return a.complex === b.complex; }
+                    });
+                    for (let change of [
+                        {'timestamp': 10, 'name': 'weather', 'val': {'complex': 'raining'}},
+                        {'timestamp': 20, 'name': 'weather', 'val': {'complex': 'sunny'}},
+                        {'timestamp': 25, 'name': 'sun', 'val': {'complex': 'spotty'}},
+                    ]) {
+                        db.add_change(change);
+                    }
+                    this.db = db;
+                });
+
+                it('does nothing for a non existing change', function () {
+                    let db = this.db;
+                    expect(db.change_list()).to.be.an('array').is.length(3);
+                    db.remove_change({'timestamp': 20, 'name': 'weather', 'val': {'complex': 'foggy'}});
+                    expect(db.change_list()).to.be.an('array').is.length(3);
+                    db.remove_change({'timestamp': 20, 'name': 'sun', 'val': {'complex': 'sunny'}});
+                    expect(db.change_list()).to.be.an('array').is.length(3);
+                    db.remove_change({'timestamp': 10, 'name': 'weather', 'val': {'complex': 'sunny'}});
+                    expect(db.change_list()).to.be.an('array').is.length(3);
+                    db.remove_change({'timestamp': 20, 'name': 'unknown', 'val': {'complex': 'sunny'}});
+                    expect(db.change_list()).to.be.an('array').is.length(3);
+                });
+
+                it('removes an existing change', function () {
+                    let db = this.db;
+                    expect(db.change_list())
+                        .to.be.an('array')
+                        .is.length(3);
+                    db.remove_change({'timestamp': 20, 'name': 'weather', 'val': {'complex': 'sunny'}});
+                    expect(db.change_list())
+                        .to.be.an('array')
+                        .is.length(2)
+                        .to.include({'timestamp': 10, 'name': 'weather', 'val': {'complex': 'raining'}})
+                        .to.include({'timestamp': 25, 'name': 'sun', 'val': {'complex': 'spotty'}});
+                    db.remove_change({'timestamp': 10, 'name': 'weather', 'val': {'complex': 'raining'}});
+                    expect(db.change_list())
+                        .to.be.an('array')
+                        .is.length(1)
+                        .to.include({'timestamp': 25, 'name': 'sun', 'val': {'complex': 'spotty'}});
+                    db.remove_change({'timestamp': 25, 'name': 'sun', 'val': {'complex': 'spotty'}});
+                    expect(db.change_list())
+                        .to.be.an('array')
+                        .is.length(0);
+                });
+
             });
 
         });

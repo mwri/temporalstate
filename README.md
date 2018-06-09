@@ -154,6 +154,29 @@ Constructs a `temporalstate` object.
 let db = new temporalstate();
 ```
 
+NOTE in the examples of this documentation, simple scalar values
+are employed; strings such as `'raining'` and `'super'`. There is
+nothing to stop you from using complex structures instead EXCEPT
+that `temporalstate` needs to know how to determine their
+equality! So, if you use complex structures you must provide
+an equality checking function, like this:
+
+```javascript
+let db = new temporalstate({
+    'valeqf': function (a, b) {
+        // return true if the values are equal, otherwise false
+        return JSON.stringify(a) === JSON.stringify(b);
+    }
+});
+```
+
+This one is a bit of a get out of jail free card because it is
+highly likely to work for almost any structure you employ. Use
+this if it is appropriate, but an equality function more
+specific to your data might be more efficient (for example the
+function `function (a, b) { return a.complex === b.complex; }`
+is used in the unit tests), if that is possible.
+
 #### add_change
 
 Adds a change to the temporal data. If the change is redundant
