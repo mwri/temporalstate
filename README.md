@@ -406,6 +406,10 @@ let changes_at = db.at(10);
 Returns an empty list if there are no changes at the specified
 time.
 
+If a variable name is specified as an argument, then a single
+change is returned, or `null` if there is none at the specified
+time.
+
 #### after
 
 Returns the change(s) occurring closest after the specified time.

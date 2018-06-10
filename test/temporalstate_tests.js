@@ -995,6 +995,16 @@ describe('temporalstate', () => {
                 expect(db.at(111)).to.eql([]);
             });
 
+            it('returns a change when var name is specified', function () {
+                let db = this.db;
+                expect(db.at(10, 'weather')).to.eql({'timestamp': 10, 'name': 'weather', 'val': 'raining'});
+            });
+
+            it('returns null when var name is specified but there is no change', function () {
+                let db = this.db;
+                expect(db.at(11, 'weather')).to.eql(null);
+            });
+
         });
 
         describe('after', () => {
