@@ -259,6 +259,28 @@ describe('temporalstate', () => {
                 .to.include({'timestamp': 20, 'name': 'weather', 'val': 'foggy'});
         });
 
+        it('updates change list and removes following change when change timestamp and name already exists but value changes to the same value as the following change', function () {
+            let db = this.db;
+            expect(db.change_list())
+                .to.be.an('array')
+                .is.lengthOf(0);
+            db.add_change({'timestamp': 10, 'name': 'weather', 'val': 'raining'});
+            db.add_change({'timestamp': 20, 'name': 'weather', 'val': 'foggy'});
+            db.add_change({'timestamp': 30, 'name': 'weather', 'val': 'xxx'});
+            expect(db.change_list())
+                .to.be.an('array')
+                .is.lengthOf(3)
+                .to.include({'timestamp': 10, 'name': 'weather', 'val': 'raining'})
+                .to.include({'timestamp': 20, 'name': 'weather', 'val': 'foggy'})
+                .to.include({'timestamp': 30, 'name': 'weather', 'val': 'xxx'});
+            db.add_change({'timestamp': 20, 'name': 'weather', 'val': 'xxx'});
+            expect(db.change_list())
+                .to.be.an('array')
+                .is.lengthOf(2)
+                .to.include({'timestamp': 10, 'name': 'weather', 'val': 'raining'})
+                .to.include({'timestamp': 20, 'name': 'weather', 'val': 'xxx'});
+        });
+
         it('updates change list when change timestamp and name already exists but value changes (not first change)', function () {
             let db = this.db;
             expect(db.change_list())
