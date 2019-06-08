@@ -128,7 +128,6 @@ will work.
       5. [change](#change).
       6. [txn_start](#txn_start).
       7. [txn_end](#txn_end).
-4. [Build](#build).
 
 ## Full API reference
 
@@ -698,23 +697,3 @@ and the second being `[{'remove': {'timestamp': 20, 'name': 'weather',
 The **txn_end** event is exactly like the **txn_start** event described
 above, except that it is emitted after all the changes have been
 executed.
-
-## Build
-
-run `npm install` to install the dependencies, and `grunt build` to
-build (or `./node_modules/.bin/grunt build` if you do not have
-grunt, grunt CLI locally installed.
-
-This will run code checkers and linters and the test suite, report on
-coverage and build build `dist/temporalstate_es5.js`, an ES5 babel
-transpile of the ES6 source.
-
-Running `grunt watch:build` will watch for changes to the source or
-tests and invoke the full build cycle when they are detected. Running
-`grunt watch:test` will again watch for changes, and invoke the most
-light weight possible file test cycle.
-
-Note that in the event of stack traces being output during the full
-build, with coverage reports, the stack trace line numbers will be
-broken. Run `test` or `watch:test` for valid stack traces instead
-of `build`.

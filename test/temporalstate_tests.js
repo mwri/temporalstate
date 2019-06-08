@@ -1,6 +1,6 @@
-import chai_jasmine from 'chai-jasmine';
-import temporalstate from './../lib/temporalstate.js';
-import bintrees from 'bintrees';
+const chai_jasmine = require('chai-jasmine');
+const temporalstate = require('./../lib/temporalstate.js').default;
+const bintrees = require('bintrees');
 
 
 describe('temporalstate', () => {

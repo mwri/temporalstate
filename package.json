@@ -9,14 +9,15 @@
   "os": [
     "linux"
   ],
-  "main": "dist/temporalstate_es5.js",
+  "main": "lib/temporalstate_es5.js",
   "module": "lib/temporalstate.js",
-  "browser": "dist/temporalstate_es5.js",
+  "browser": "lib/temporalstate_es5.js",
   "license": "MIT",
   "url": "https://github.com/mwri/temporalstate",
   "scripts": {
     "prepublishOnly": "./node_modules/grunt-cli/bin/grunt prepublish",
-    "test": "grunt test"
+    "test": "./node_modules/.bin/mocha",
+    "coverage": "./node_modules/.bin/nyc --reporter=html --reporter=text --reporter=lcov ./node_modules/.bin/mocha"
   },
   "repository": {
     "type": "git",
@@ -35,25 +36,14 @@
   },
   "homepage": "https://github.com/mwri/temporalstate#readme",
   "devDependencies": {
-    "babel-cli": "^6.26.0",
-    "babel-core": "^6.26.0",
-    "babel-istanbul": "^0.12.2",
-    "babel-preset-env": "^1.6.1",
     "chai-jasmine": "^1.0.7",
-    "eslint": "^4.18.0",
-    "grunt": "^1.0.1",
-    "grunt-babel": "^7.0.0",
-    "grunt-cli": "^1.2.0",
-    "grunt-contrib-jshint": "^1.1.0",
-    "grunt-contrib-watch": "^1.0.0",
-    "grunt-eslint": "^20.1.0",
-    "grunt-git": "^1.0.9",
-    "grunt-mocha-istanbul": "^5.0.2",
-    "grunt-mocha-test": "^0.13.3",
-    "istanbul": "^0.4.5",
-    "load-grunt-tasks": "^3.5.2",
-    "mocha": "^4.0.1",
-    "coveralls": "=2.11.16"
+    "coveralls": "^3.0.4",
+    "grunt": "^1.0.4",
+    "grunt-cli": "^1.3.2",
+    "grunt-git": "^1.0.13",
+    "load-grunt-tasks": "^5.0.0",
+    "mocha": "^6.1.4",
+    "nyc": "^14.1.1"
   },
   "dependencies": {
     "bintrees": "^1.0.2"
